@@ -1,7 +1,9 @@
 function normalize(coord, bounds) {
   return [
     (coord[0] - bounds.left) / bounds.width,
-    (coord[1] - bounds.bottom) / bounds.height
+    (coord[1] - bounds.bottom) / bounds.height,
+    (coord[2] - bounds.left) / bounds.width,
+    (coord[3] - bounds.bottom) / bounds.height
   ];
 }
 

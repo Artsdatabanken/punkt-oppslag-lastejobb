@@ -85,21 +85,49 @@ function find(tree, x, y, z) {
   return Object.assign({}, dv, { [z]: tree.value });
 }
 
-function create(tree, x, y, z) {
-  if (z === 0) return tree;
-  tree = createChild(tree, x, y);
-  return create(tree, 2 * (x % 0.5), 2 * (y % 0.5), z - 1);
+const quadBound = {
+  parent: { x: [0, 1], y: [0, 1] },
+  nw: { x: [0, 0.5], y: [0, 0.5] },
+  ne: { x: [0.5, 1], y: [0, 0.5] },
+  sw: { x: [0, 0.5], y: [0.5, 1] },
+  se: { x: [0.5, 1], y: [0.5, 1] }
+};
+function createChild(tree, dir, bounds, z, value) {
+  const cb = quadBound[dir];
+  bounds = clip(bounds, cb);
+  debugger;
+  if (bounds[0] >= bounds[2]) return;
+  if (bounds[1] >= bounds[3]) return;
+  debugger;
+  return create(tree, bounds, z - 1, value);
 }
 
-function add(tree, x, y, z, value) {
-  tree = create(tree, x, y, z);
-  if (tree.value) {
-    if (value !== tree.value) {
-      //collisions++;
-    }
-    tree.value = value;
-    max = Math.max(max, tree.value.length);
-  } else tree.value = value;
+function clip(aarect, bounds) {
+  return [
+    Math.max(bounds.x[0], aarect[0]),
+    Math.min(bounds.x[1], aarect[1]),
+    Math.max(bounds.y[0], aarect[2]),
+    Math.min(bounds.y[1], aarect[3])
+  ];
+}
+
+function create(tree, bounds, z, value) {
+  if (z === 0) return tree;
+
+  createChild(tree, "nw", bounds, z, value);
+  createChild(tree, "ne", bounds, z, value);
+  createChild(tree, "sw", bounds, z, value);
+  createChild(tree, "se", bounds, z, value);
+}
+
+function add(tree, bounds, z, value) {
+  tree = create(tree, bounds, z, value);
+  bounds = clip(bounds, quadBound.parent);
+  const area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
+  tree.area = (tree.area || 0) + area;
+  if (value < -5) debugger;
+  if (area > 1e-6) debugger;
+  tree.value = (tree.value || 0) + value * area;
 }
 
 module.exports = { add, find, find2 };

@@ -6,6 +6,8 @@ const geometry = require("./geometry");
 const tree = {
   bounds: { left: -2500000, bottom: 3500000, right: 3045984, top: 9045984 }
 };
+tree.bounds.width = tree.bounds.right - tree.bounds.left;
+tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
 
 const r = [];
 
@@ -32,7 +34,7 @@ function index(raster, bbox, width, height) {
       if (value === 0) continue;
       const coords = getPixelCoords(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
-      quadtree.add(tree, xy[0], xy[1], 0, value);
+      quadtree.add(tree, xy, 0, value);
       r.push({ coords, value });
     }
 }
@@ -42,7 +44,7 @@ function getPixelCoords(bbox, x, y, width, height) {
   const metersPerPixelY = (bbox[3] - bbox[1]) / height;
   const coX = bbox[0] + x * metersPerPixelX;
   const coY = bbox[3] - y * metersPerPixelY;
-  return [coX, coY, coX + metersPerPixelX, coY - metersPerPixelY];
+  return [coX, coY - metersPerPixelY, coX + metersPerPixelX, coY];
 }
 
 processTiff().then(x => {
