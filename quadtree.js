@@ -4,12 +4,6 @@ function getChildKey(x, y) {
   return ns + we;
 }
 
-function createChild(tree, x, y) {
-  const key = getChildKey(x, y);
-  if (!tree[key]) tree[key] = {};
-  return tree[key];
-}
-
 function getChild(tree, x, y) {
   const key = getChildKey(x, y);
   return tree[key];
@@ -94,25 +88,45 @@ const quadBound = {
 };
 function createChild(tree, dir, bounds, z, value) {
   const cb = quadBound[dir];
-  bounds = clip(bounds, cb);
-  debugger;
+  bounds = clipAndNormalize(bounds, cb);
   if (bounds[0] >= bounds[2]) return;
   if (bounds[1] >= bounds[3]) return;
-  debugger;
-  return create(tree, bounds, z - 1, value);
+  const stop =
+    z === 0 ||
+    (bounds[0] === 0 && bounds[1] === 0 && bounds[2] === 1 && bounds[3] === 1);
+  if (stop) {
+    const area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
+    tree.area = (tree.area || 0) + area;
+    //    if (value < -5) debugger;
+    //  if (area > 1e-6) debugger;
+    tree.value = (tree.value || 0) + value * area;
+    return;
+  }
+  if (!tree[dir]) tree[dir] = {};
+  create(tree[dir], bounds, z - 1, value);
+}
+
+function clipAndNormalize(aarect, bounds) {
+  aarect = clip(aarect, bounds);
+  return [
+    2 * (aarect[0] - bounds.x[0]),
+    2 * (aarect[1] - bounds.y[0]),
+    2 * (aarect[2] - bounds.x[0]),
+    2 * (aarect[3] - bounds.y[0])
+  ];
 }
 
 function clip(aarect, bounds) {
   return [
-    Math.max(bounds.x[0], aarect[0]),
-    Math.min(bounds.x[1], aarect[1]),
-    Math.max(bounds.y[0], aarect[2]),
-    Math.min(bounds.y[1], aarect[3])
+    Math.min(bounds.x[1], Math.max(bounds.x[0], aarect[0])),
+    Math.min(bounds.y[1], Math.max(bounds.y[0], aarect[1])),
+    Math.min(bounds.x[1], Math.max(bounds.x[0], aarect[2])),
+    Math.min(bounds.y[1], Math.max(bounds.y[0], aarect[3]))
   ];
 }
 
 function create(tree, bounds, z, value) {
-  if (z === 0) return tree;
+  //  if (z === 0) return tree;
 
   createChild(tree, "nw", bounds, z, value);
   createChild(tree, "ne", bounds, z, value);
@@ -121,13 +135,7 @@ function create(tree, bounds, z, value) {
 }
 
 function add(tree, bounds, z, value) {
-  tree = create(tree, bounds, z, value);
-  bounds = clip(bounds, quadBound.parent);
-  const area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
-  tree.area = (tree.area || 0) + area;
-  if (value < -5) debugger;
-  if (area > 1e-6) debugger;
-  tree.value = (tree.value || 0) + value * area;
+  create(tree, bounds, z, value);
 }
 
 module.exports = { add, find, find2 };

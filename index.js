@@ -34,7 +34,7 @@ function index(raster, bbox, width, height) {
       if (value === 0) continue;
       const coords = getPixelCoords(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
-      quadtree.add(tree, xy, 0, value);
+      quadtree.add(tree, xy, 17, value);
       r.push({ coords, value });
     }
 }
