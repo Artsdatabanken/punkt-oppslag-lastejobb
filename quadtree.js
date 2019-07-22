@@ -87,8 +87,7 @@ const quadBound = {
   se: { x: [0.5, 1], y: [0.5, 1] }
 };
 function createChild(tree, dir, bounds, z, value) {
-  const cb = quadBound[dir];
-  bounds = clipAndNormalize(bounds, cb);
+  bounds = clip(bounds, quadBound[dir]);
   if (bounds[0] >= bounds[2]) return;
   if (bounds[1] >= bounds[3]) return;
   const stop =
@@ -103,11 +102,11 @@ function createChild(tree, dir, bounds, z, value) {
     return;
   }
   if (!tree[dir]) tree[dir] = {};
+  bounds = normalizeToNextZoom(bounds, quadBound[dir]);
   create(tree[dir], bounds, z - 1, value);
 }
 
-function clipAndNormalize(aarect, bounds) {
-  aarect = clip(aarect, bounds);
+function normalizeToNextZoom(aarect, bounds) {
   return [
     2 * (aarect[0] - bounds.x[0]),
     2 * (aarect[1] - bounds.y[0]),
