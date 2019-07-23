@@ -45,9 +45,9 @@ function add(tree, bounds, z, value) {
     z === 0 ||
     (bounds[0] === 0 && bounds[1] === 0 && bounds[2] === 1 && bounds[3] === 1);
   if (stop) {
-    const area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
-    tree.area = (tree.area || 0) + area;
-    tree.value = (tree.value || 0) + value * area;
+    const p = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
+    tree.p = (tree.p || 0) + p;
+    tree.v = (tree.v || 0) + value * p;
     return;
   }
 

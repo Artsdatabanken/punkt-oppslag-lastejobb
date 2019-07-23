@@ -10,12 +10,12 @@ function getChild(tree, x, y) {
 }
 
 function accumulateHits(acc, node, z) {
-  if (!node.value) return;
-  acc[z] = acc[z] || { area: 0, value: 0 };
+  if (!node.v) return;
+  acc[z] = acc[z] || { p: 0, v: 0 };
   const s = acc[z];
-  s.value = (s.value ? s.value / s.area : 0) + node.value / node.area;
-  s.area += node.area;
-  s.area *= s.area;
+  s.v = (s.v ? s.v / s.p : 0) + node.v / node.p;
+  s.p += node.p;
+  s.p *= s.p;
 }
 
 function innerFind(tree, x, y, z, currentZ, acc) {

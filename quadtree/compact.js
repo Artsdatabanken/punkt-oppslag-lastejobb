@@ -10,19 +10,18 @@ function equalChildren(tree) {
   if (!tree.sw) return;
   if (!tree.se) return;
 
-  if (tree.nw.area !== 1) return;
-  if (tree.ne.area !== 1) return;
-  if (tree.sw.area !== 1) return;
-  if (tree.se.area !== 1) return;
+  if (tree.nw.p !== 1) return;
+  if (tree.ne.p !== 1) return;
+  if (tree.sw.p !== 1) return;
+  if (tree.se.p !== 1) return;
 
-  if (tree.nw.value !== tree.ne.value) return;
-  if (tree.ne.value !== tree.sw.value) return;
-  if (tree.sw.value !== tree.se.value) return;
+  if (tree.nw.v !== tree.ne.v) return;
+  if (tree.ne.v !== tree.sw.v) return;
+  if (tree.sw.v !== tree.se.v) return;
 
   // All quads have the same value, remove and set the value on parent
-  tree.value = tree.nw.value;
-  tree.area =
-    0.25 * (tree.nw.area + tree.ne.area + tree.sw.area + tree.se.area);
+  tree.v = tree.nw.v;
+  tree.p = 0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p);
   delete tree.nw;
   delete tree.ne;
   delete tree.sw;
