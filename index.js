@@ -10,8 +10,6 @@ const tree = {
 tree.bounds.width = tree.bounds.right - tree.bounds.left;
 tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
 
-const r = [];
-
 async function processTiff(meta) {
   const gt = await GeoTIFF.fromFile(meta.mapFile);
   const imageCount = await gt.getImageCount();
@@ -37,7 +35,7 @@ function index(raster, bbox, width, height, meta) {
       const coords = getPixelCoords(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
       quadtree.add(tree, xy, meta.zoom, qvalue);
-      r.push({ coords, value });
+      // r.push({ coords, value });
     }
 }
 
@@ -48,6 +46,7 @@ function quantize(intervall, value) {
     intervall.normalisertVerdi[0]
   );
 }
+
 function getPixelCoords(bbox, x, y, width, height) {
   const metersPerPixelX = (bbox[2] - bbox[0]) / width;
   const metersPerPixelY = (bbox[3] - bbox[1]) / height;
@@ -55,8 +54,6 @@ function getPixelCoords(bbox, x, y, width, height) {
   const coY = bbox[3] - y * metersPerPixelY;
   return [coX, coY - metersPerPixelY, coX + metersPerPixelX, coY];
 }
-
-processDataset("data/PCA2_32633.json");
 
 function processDataset(metaPath) {
   const meta = lastejobb.io.readJson(metaPath);
@@ -85,3 +82,7 @@ function processDataset(metaPath) {
     //    fs.writeFileSync("tree.json", JSON.stringify(tree));
   });
 }
+
+//processDataset("data/NA-LKM-S3-F.json");
+//processDataset("data/KLG-BP.json");
+processDataset("data/KLG-KA.json");
