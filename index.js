@@ -3,6 +3,7 @@ const GeoTIFF = require("geotiff");
 const fs = require("fs");
 const quadtree = require("./quadtree");
 const geometry = require("./geometry");
+const filesystemwriter = require("./filesystemwriter");
 
 const tree = {
   bounds: { left: -2500000, bottom: 3500000, right: 3045984, top: 9045984 }
@@ -75,6 +76,8 @@ processTiff(meta).then(x => {
   quadtree.compact.removeP(tree);
   const stats = quadtree.statistics.summarize(tree);
   console.log(quadtree.find(tree, coords[0], coords[1], 42));
+  debugger;
+  filesystemwriter.write(tree, "./data", meta);
   fs.writeFileSync("stats.json", JSON.stringify(stats));
   fs.writeFileSync("x.json", JSON.stringify(r));
   fs.writeFileSync("tree.json", JSON.stringify(tree));
