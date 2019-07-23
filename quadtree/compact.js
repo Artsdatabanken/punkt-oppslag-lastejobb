@@ -17,17 +17,32 @@ function equalChildren(tree, options = { compactAnyP: true }) {
     if (tree.se.p !== 1) return;
   }
 
-  let avg = 0.25 * (tree.nw.v + tree.ne.v + tree.sw.v + tree.se.v);
-  if (isNaN(avg)) return;
-  const threshold = 0.01;
-  if (Math.abs(tree.nw.v - avg) > threshold) return;
-  if (Math.abs(tree.ne.v - avg) > threshold) return;
-  if (Math.abs(tree.sw.v - avg) > threshold) return;
-  if (Math.abs(tree.se.v - avg) > threshold) return;
+  let value = 0;
+  if (tree.nw) {
+    if (!tree.nw.v) return;
+    if (value && value != tree.nw.v) return;
+    value = tree.nw.v;
+  }
+  if (tree.ne) {
+    if (!tree.ne.v) return;
+    if (value && value != tree.ne.v) return;
+    value = tree.ne.v;
+  }
+  if (tree.sw) {
+    if (!tree.sw.v) return;
+    if (value && value != tree.sw.v) return;
+    value = tree.sw.v;
+  }
+  if (tree.se) {
+    if (!tree.se.v) return;
+    if (value && value != tree.se.v) return;
+    value = tree.se.v;
+  }
 
   // All quads have the same value, remove and set the value on parent
-  tree.v = tree.nw.v;
-  tree.p = ~~(0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p));
+  tree.v = value;
+  if (value === 0) debugger;
+  tree.p = 0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p);
   if (!tree.p) debugger;
   delete tree.nw;
   delete tree.ne;
@@ -44,4 +59,13 @@ function quantizeValues(tree) {
   if (tree.v) tree.v = ~~tree.v;
 }
 
-module.exports = { equalChildren, quantizeValues };
+function removeP(tree) {
+  if (!tree) return;
+  removeP(tree.nw);
+  removeP(tree.ne);
+  removeP(tree.sw);
+  removeP(tree.se);
+  delete tree.p;
+}
+
+module.exports = { equalChildren, quantizeValues, removeP };

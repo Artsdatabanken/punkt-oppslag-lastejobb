@@ -34,10 +34,9 @@ function index(raster, bbox, width, height, meta) {
       const value = raster[offset];
       if (value === meta.nullverdi) continue;
       const qvalue = quantize(meta.intervall, value);
-
       const coords = getPixelCoords(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
-      quadtree.add(tree, xy, 17, qvalue);
+      quadtree.add(tree, xy, meta.zoom, qvalue);
       r.push({ coords, value });
     }
 }
@@ -62,11 +61,19 @@ const intervall = meta.intervall;
 intervall.original.bredde = intervall.original[1] - intervall.original[0];
 intervall.normalisertVerdi.bredde =
   intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
+console.log("Zoom limit:           " + meta.zoom);
+console.log(
+  "Effective resolution: " +
+    tree.bounds.width * Math.pow(0.5, meta.zoom) +
+    " meters"
+);
 processTiff(meta).then(x => {
   const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
   console.log(quadtree.find(tree, coords[0], coords[1], 42));
   quadtree.compact.quantizeValues(tree);
   quadtree.compact.equalChildren(tree);
+  quadtree.addPyramid(tree);
+  quadtree.compact.removeP(tree);
   const stats = quadtree.statistics.summarize(tree);
   fs.writeFileSync("stats.json", JSON.stringify(stats));
   fs.writeFileSync("x.json", JSON.stringify(r));

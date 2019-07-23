@@ -11,17 +11,19 @@ function getChild(tree, x, y) {
 
 function accumulateHits(acc, node, z) {
   if (!node.v) return;
-  acc[z] = acc[z] || { p: 0, v: 0 };
+  acc[z] = acc[z] || { p: 0, v: 0, min: 1e9, max: -1e9 };
   const s = acc[z];
   s.v = (s.v ? s.v / s.p : 0) + node.v / node.p;
+  s.min = Math.min(s.min, node.min || node.v);
+  s.max = Math.max(s.max, node.max || node.v);
   s.p += node.p;
   s.p *= s.p;
 }
 
 function innerFind(tree, x, y, z, currentZ, acc) {
-  if (z === currentZ) return accumulateHits(acc, tree, currentZ);
+  if (!tree) return;
   const leaf = getChild(tree, x, y);
-  if (leaf) innerFind(leaf, 2 * (x % 0.5), 2 * (y % 0.5), z, currentZ + 1, acc);
+  innerFind(leaf, 2 * (x % 0.5), 2 * (y % 0.5), z, currentZ + 1, acc);
   return accumulateHits(acc, tree, currentZ);
 }
 
