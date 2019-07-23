@@ -48,6 +48,8 @@ function getPixelCoords(bbox, x, y, width, height) {
 }
 
 processTiff().then(x => {
+  const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
+  console.log(quadtree.find(tree, coords[0], coords[1], 42));
   fs.writeFileSync("x.json", JSON.stringify(r));
   fs.writeFileSync("tree.json", JSON.stringify(tree));
 });
