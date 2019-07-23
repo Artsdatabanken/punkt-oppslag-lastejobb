@@ -25,7 +25,7 @@ function innerFind(tree, x, y, z, currentZ, acc) {
   return accumulateHits(acc, tree, currentZ);
 }
 
-function find(tree, x, y, z, currentZ = 0) {
+function find(tree, x, y, z) {
   const acc = { x, y, z };
   innerFind(tree, x, y, z, 0, acc);
   return acc;
