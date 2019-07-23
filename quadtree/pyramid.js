@@ -13,7 +13,6 @@ function build(tree) {
   if (items.length <= 0) return;
   const acc = items.reduce(
     (acc, e) => {
-      if (e.v === null) debugger;
       acc.sum += e.v;
       acc.p += e.p;
       acc.count++;

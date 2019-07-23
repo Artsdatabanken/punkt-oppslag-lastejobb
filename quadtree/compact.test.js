@@ -33,7 +33,18 @@ test("don't compact unless fully covered", () => {
   testCompact(tree, expected);
 });
 
-function testCompact(tree, expected) {
-  quadtree.compact.equalChildren(tree);
+test("compact without full cover if we say so", () => {
+  const tree = {
+    nw: { p: 1, v: 1 },
+    ne: { p: 1, v: 1 },
+    sw: { p: 0.5, v: 1 },
+    se: { p: 1, v: 1 }
+  };
+  const expected = '{"v":1,"p":0.875}';
+  testCompact(tree, expected, { compactAnyP: true });
+});
+
+function testCompact(tree, expected, options = {}) {
+  quadtree.compact.equalChildren(tree, options);
   expect(JSON.stringify(tree)).toBe(expected);
 }
