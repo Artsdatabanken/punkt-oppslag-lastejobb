@@ -1,4 +1,4 @@
-const quadtree = require("./quadtree");
+const quadtree = require("./index");
 
 test("zoom 0 quarter", () => {
   const tree = { area: 0.25, value: 0.25 };
