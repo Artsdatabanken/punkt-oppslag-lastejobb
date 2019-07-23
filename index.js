@@ -69,12 +69,12 @@ console.log(
 );
 processTiff(meta).then(x => {
   const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-  console.log(quadtree.find(tree, coords[0], coords[1], 42));
   quadtree.compact.quantizeValues(tree);
   quadtree.compact.equalChildren(tree);
   quadtree.addPyramid(tree);
   quadtree.compact.removeP(tree);
   const stats = quadtree.statistics.summarize(tree);
+  console.log(quadtree.find(tree, coords[0], coords[1], 42));
   fs.writeFileSync("stats.json", JSON.stringify(stats));
   fs.writeFileSync("x.json", JSON.stringify(r));
   fs.writeFileSync("tree.json", JSON.stringify(tree));
