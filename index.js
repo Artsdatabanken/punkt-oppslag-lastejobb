@@ -1,6 +1,5 @@
 const lastejobb = require("lastejobb");
 const GeoTIFF = require("geotiff");
-const fs = require("fs");
 const quadtree = require("./quadtree");
 const geometry = require("./geometry");
 const filesystemwriter = require("./filesystemwriter");
@@ -14,7 +13,7 @@ tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
 const r = [];
 
 async function processTiff(meta) {
-  const gt = await GeoTIFF.fromFile("./data/PCA1_32633.tif");
+  const gt = await GeoTIFF.fromFile(meta.mapFile);
   const imageCount = await gt.getImageCount();
   if (imageCount !== 1)
     throw new Error("Can only handle GeoTiff containing single image.");
@@ -57,28 +56,32 @@ function getPixelCoords(bbox, x, y, width, height) {
   return [coX, coY - metersPerPixelY, coX + metersPerPixelX, coY];
 }
 
-const meta = lastejobb.io.readJson("data/PCA1_32633.json");
-const intervall = meta.intervall;
-intervall.original.bredde = intervall.original[1] - intervall.original[0];
-intervall.normalisertVerdi.bredde =
-  intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
-console.log("Zoom limit:           " + meta.zoom);
-console.log(
-  "Effective resolution: " +
-    tree.bounds.width * Math.pow(0.5, meta.zoom) +
-    " meters"
-);
-processTiff(meta).then(x => {
-  const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-  quadtree.compact.quantizeValues(tree);
-  quadtree.compact.equalChildren(tree);
-  quadtree.addPyramid(tree);
-  quadtree.compact.removeP(tree);
-  const stats = quadtree.statistics.summarize(tree);
-  console.log(quadtree.find(tree, coords[0], coords[1], 42));
-  debugger;
-  filesystemwriter.write(tree, "./data", meta);
-  fs.writeFileSync("stats.json", JSON.stringify(stats));
-  fs.writeFileSync("x.json", JSON.stringify(r));
-  fs.writeFileSync("tree.json", JSON.stringify(tree));
-});
+processDataset("data/PCA2_32633.json");
+
+function processDataset(metaPath) {
+  const meta = lastejobb.io.readJson(metaPath);
+  meta.mapFile = metaPath.replace(".json", ".tif");
+  const intervall = meta.intervall;
+  intervall.original.bredde = intervall.original[1] - intervall.original[0];
+  intervall.normalisertVerdi.bredde =
+    intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
+  console.log("Zoom limit:           " + meta.zoom);
+  console.log(
+    "Effective resolution: " +
+      tree.bounds.width * Math.pow(0.5, meta.zoom) +
+      " meters"
+  );
+  processTiff(meta).then(x => {
+    const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
+    quadtree.compact.quantizeValues(tree);
+    quadtree.compact.equalChildren(tree);
+    quadtree.addPyramid(tree);
+    quadtree.compact.removeP(tree);
+    const stats = quadtree.statistics.summarize(tree);
+    console.log(quadtree.find(tree, coords[0], coords[1], 42));
+    filesystemwriter.write(tree, "./data", meta);
+    //    fs.writeFileSync("stats.json", JSON.stringify(stats));
+    //    fs.writeFileSync("x.json", JSON.stringify(r));
+    //    fs.writeFileSync("tree.json", JSON.stringify(tree));
+  });
+}
