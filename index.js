@@ -1,3 +1,4 @@
+const lastejobb = require("lastejobb");
 const GeoTIFF = require("geotiff");
 const fs = require("fs");
 const quadtree = require("./quadtree");
@@ -11,7 +12,7 @@ tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
 
 const r = [];
 
-async function processTiff() {
+async function processTiff(meta) {
   const gt = await GeoTIFF.fromFile("./data/PCA1_32633.tif");
   const imageCount = await gt.getImageCount();
   if (imageCount !== 1)
@@ -23,22 +24,31 @@ async function processTiff() {
   const rasters = await image.readRasters();
   if (rasters.length !== 1)
     throw new Error("Can only handle GeoTiff containing single raster.");
-  index(rasters[0], bbox, width, height);
+  index(rasters[0], bbox, width, height, meta);
 }
 
-function index(raster, bbox, width, height) {
+function index(raster, bbox, width, height, meta) {
   for (var y = 0; y < height; y++)
     for (var x = 0; x < width; x++) {
       const offset = y * width + x;
       const value = raster[offset];
-      if (value === 0) continue;
+      if (value === meta.nullverdi) continue;
+      const qvalue = quantize(meta.intervall, value);
+
       const coords = getPixelCoords(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
-      quadtree.add(tree, xy, 17, value);
+      quadtree.add(tree, xy, 17, qvalue);
       r.push({ coords, value });
     }
 }
 
+function quantize(intervall, value) {
+  return (
+    ((value - intervall.original[0]) / intervall.original.bredde) *
+      intervall.normalisertVerdi.bredde +
+    intervall.normalisertVerdi[0]
+  );
+}
 function getPixelCoords(bbox, x, y, width, height) {
   const metersPerPixelX = (bbox[2] - bbox[0]) / width;
   const metersPerPixelY = (bbox[3] - bbox[1]) / height;
@@ -47,9 +57,15 @@ function getPixelCoords(bbox, x, y, width, height) {
   return [coX, coY - metersPerPixelY, coX + metersPerPixelX, coY];
 }
 
-processTiff().then(x => {
+const meta = lastejobb.io.readJson("data/PCA1_32633.json");
+const intervall = meta.intervall;
+intervall.original.bredde = intervall.original[1] - intervall.original[0];
+intervall.normalisertVerdi.bredde =
+  intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
+processTiff(meta).then(x => {
   const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
   console.log(quadtree.find(tree, coords[0], coords[1], 42));
+  quadtree.compact.quantizeValues(tree);
   quadtree.compact.equalChildren(tree);
   const stats = quadtree.statistics.summarize(tree);
   fs.writeFileSync("stats.json", JSON.stringify(stats));

@@ -13,6 +13,7 @@
     "babel-runtime": "^6.26.0",
     "geotiff": "^1.0.0-beta.6",
     "jest": "^24.8.0",
+    "lastejobb": "^1.23.2",
     "polygon-lookup": "^2.5.0"
   }
 }
