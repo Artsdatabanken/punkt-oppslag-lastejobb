@@ -39,12 +39,12 @@ const quadBound = {
   se: { x: [0.5, 1], y: [0.5, 1] }
 };
 
-function createChild(tree, dir, bounds, z, value) {
+function addChild(tree, dir, bounds, z, value) {
   bounds = clip(bounds, quadBound[dir]);
   if (!hasArea(bounds)) return;
   if (!tree[dir]) tree[dir] = {};
   bounds = normalizeToNextZoom(bounds, quadBound[dir]);
-  create(tree[dir], bounds, z - 1, value);
+  add(tree[dir], bounds, z - 1, value);
 }
 
 function normalizeToNextZoom(aarect, bounds) {
@@ -71,7 +71,7 @@ function hasArea(aabb) {
   return true;
 }
 
-function create(tree, bounds, z, value) {
+function add(tree, bounds, z, value) {
   bounds = clip(bounds, quadBound.parent);
   if (!hasArea(bounds)) return;
   const stop =
@@ -84,14 +84,10 @@ function create(tree, bounds, z, value) {
     return;
   }
 
-  createChild(tree, "nw", bounds, z, value);
-  createChild(tree, "ne", bounds, z, value);
-  createChild(tree, "sw", bounds, z, value);
-  createChild(tree, "se", bounds, z, value);
-}
-
-function add(tree, bounds, z, value) {
-  create(tree, bounds, z, value);
+  addChild(tree, "nw", bounds, z, value);
+  addChild(tree, "ne", bounds, z, value);
+  addChild(tree, "sw", bounds, z, value);
+  addChild(tree, "se", bounds, z, value);
 }
 
 module.exports = { add, find };
