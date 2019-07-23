@@ -86,21 +86,11 @@ const quadBound = {
   sw: { x: [0, 0.5], y: [0.5, 1] },
   se: { x: [0.5, 1], y: [0.5, 1] }
 };
+
 function createChild(tree, dir, bounds, z, value) {
-  bounds = clip(bounds, quadBound.parent);
-  if (bounds[0] >= bounds[2]) return;
-  if (bounds[1] >= bounds[3]) return;
-  const stop =
-    z === 0 ||
-    (bounds[0] === 0 && bounds[1] === 0 && bounds[2] === 1 && bounds[3] === 1);
-  if (stop) {
-    const area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
-    tree.area = (tree.area || 0) + area;
-    tree.value = (tree.value || 0) + value * area;
-    return;
-  }
-  if (!tree[dir]) tree[dir] = {};
   bounds = clip(bounds, quadBound[dir]);
+  if (!hasArea(bounds)) return;
+  if (!tree[dir]) tree[dir] = {};
   bounds = normalizeToNextZoom(bounds, quadBound[dir]);
   create(tree[dir], bounds, z - 1, value);
 }
@@ -123,8 +113,24 @@ function clip(aarect, bounds) {
   ];
 }
 
+function hasArea(aabb) {
+  if (aabb[0] >= aabb[2]) return false;
+  if (aabb[1] >= aabb[3]) return false;
+  return true;
+}
+
 function create(tree, bounds, z, value) {
-  //  if (z === 0) return tree;
+  bounds = clip(bounds, quadBound.parent);
+  if (!hasArea(bounds)) return;
+  const stop =
+    z === 0 ||
+    (bounds[0] === 0 && bounds[1] === 0 && bounds[2] === 1 && bounds[3] === 1);
+  if (stop) {
+    const area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
+    tree.area = (tree.area || 0) + area;
+    tree.value = (tree.value || 0) + value * area;
+    return;
+  }
 
   createChild(tree, "nw", bounds, z, value);
   createChild(tree, "ne", bounds, z, value);
