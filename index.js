@@ -32,6 +32,10 @@ function index(raster, bbox, width, height, meta) {
       const value = raster[offset];
       if (value === meta.nullverdi) continue;
       const qvalue = quantize(meta.intervall, value);
+      if (qvalue > meta.intervall.normalisertVerdi[1]) {
+        console.log(value, qvalue);
+        debugger;
+      }
       const coords = getPixelCoords(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
       quadtree.add(tree, xy, meta.zoom, qvalue);
@@ -70,10 +74,10 @@ function processDataset(metaPath) {
   );
   processTiff(meta).then(x => {
     const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-    quadtree.compact.quantizeValues(tree);
     quadtree.compact.equalChildren(tree);
     quadtree.addPyramid(tree);
     quadtree.compact.removeP(tree);
+    quadtree.compact.quantizeValues(tree);
     const stats = quadtree.statistics.summarize(tree);
     console.log(quadtree.find(tree, coords[0], coords[1], 42));
     filesystemwriter.write(tree, "./data", meta);
@@ -85,4 +89,5 @@ function processDataset(metaPath) {
 
 //processDataset("data/NA-LKM-S3-F.json");
 //processDataset("data/KLG-BP.json");
-processDataset("data/KLG-KA.json");
+//processDataset("data/KLG-KA.json");
+processDataset("data/NN-LA-KLG-AI.json");
