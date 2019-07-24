@@ -81,19 +81,24 @@ function processDataset(metaPath) {
       tree.bounds.width * Math.pow(0.5, meta.zoom) +
       " meters"
   );
-  processTiff(meta).then(x => {
-    const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-    quadtree.compact.equalChildren(tree);
-    quadtree.addPyramid(tree);
-    quadtree.compact.removeP(tree);
-    quadtree.compact.quantizeValues(tree);
-    const stats = quadtree.statistics.summarize(tree);
-    console.log(quadtree.find(tree, coords[0], coords[1], 42));
-    //filesystemwriter.write(tree, "./data", meta);
-    //    fs.writeFileSync("stats.json", JSON.stringify(stats));
-    //    fs.writeFileSync("x.json", JSON.stringify(r));
-    fs.writeFileSync("tree.json", JSON.stringify(tree));
-  });
+  processTiff(meta)
+    .then(x => {
+      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
+      quadtree.compact.equalChildren(tree);
+      quadtree.addPyramid(tree);
+      quadtree.compact.quantizeValues(tree);
+      const stats = quadtree.statistics.summarize(tree);
+      console.log(stats);
+      quadtree.compact.removeP(tree);
+      console.log(quadtree.find(tree, coords[0], coords[1], 42));
+      //filesystemwriter.write(tree, "./data", meta);
+      fs.writeFileSync("stats.json", JSON.stringify(stats));
+      //    fs.writeFileSync("x.json", JSON.stringify(r));
+      //    fs.writeFileSync("tree.json", JSON.stringify(tree));
+    })
+    .catch(e => {
+      console.error(e);
+    });
 }
 
 //processDataset("data/NA-LKM-S3-F.json");
