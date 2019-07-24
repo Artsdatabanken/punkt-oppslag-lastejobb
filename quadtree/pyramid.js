@@ -24,6 +24,7 @@ function build(tree) {
   if (!tree.v) {
     tree.v = ~~(acc.sum / items.length);
   }
+  tree.p = tree.p || 0 + 0.25 * acc.p;
 }
 
 module.exports = {
