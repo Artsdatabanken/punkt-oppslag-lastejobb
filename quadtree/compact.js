@@ -1,3 +1,9 @@
+function pullFromChild(child, value) {
+  if (!child.v) return false;
+  if (value && value != child.v) return false;
+  return true;
+}
+
 function equalChildren(tree, options = { compactAnyP: true }) {
   if (!tree) return;
   equalChildren(tree.nw);
@@ -18,17 +24,13 @@ function equalChildren(tree, options = { compactAnyP: true }) {
   }
 
   let value = 0;
-  if (!tree.nw.v) return;
-  if (value && value != tree.nw.v) return;
+  if (!pullFromChild(tree.nw, value)) return false;
   value = tree.nw.v;
-  if (!tree.ne.v) return;
-  if (value && value != tree.ne.v) return;
+  if (!pullFromChild(tree.nw, value)) return false;
   value = tree.ne.v;
-  if (!tree.sw.v) return;
-  if (value && value != tree.sw.v) return;
+  if (!pullFromChild(tree.sw, value)) return false;
   value = tree.sw.v;
-  if (!tree.se.v) return;
-  if (value && value != tree.se.v) return;
+  if (!pullFromChild(tree.se, value)) return false;
   value = tree.se.v;
 
   // All quads have the same value, remove and set the value on parent
@@ -36,6 +38,10 @@ function equalChildren(tree, options = { compactAnyP: true }) {
   tree.p = 0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p);
   tree.min = Math.min(tree.nw.min, tree.ne.min, tree.sw.min, tree.se.min);
   tree.max = Math.max(tree.nw.max, tree.ne.max, tree.sw.max, tree.se.max);
+  if (!tree.nw.max) throw new Error("--");
+  if (!tree.ne.max) throw new Error("--");
+  if (!tree.sw.max) throw new Error("--");
+  if (!tree.se.max) throw new Error("--");
   debugger;
   delete tree.nw;
   delete tree.ne;

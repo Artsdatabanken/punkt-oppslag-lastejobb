@@ -14,8 +14,8 @@ function accumulateHits(acc, node, z) {
   acc[z] = acc[z] || { v: 0, min: 1e9, max: -1e9 };
   const s = acc[z];
   s.v = node.v;
-  s.min = Math.min(s.min, node.min || node.v);
-  s.max = Math.max(s.max, node.max || node.v);
+  s.min = Math.min(s.min, node.min);
+  s.max = Math.max(s.max, node.max);
 }
 
 function innerFind(tree, x, y, z, currentZ, acc) {
