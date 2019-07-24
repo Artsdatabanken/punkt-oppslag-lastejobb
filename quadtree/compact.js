@@ -36,6 +36,7 @@ function equalChildren(tree, options = { compactAnyP: true }) {
   tree.p = 0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p);
   tree.min = Math.min(tree.nw.min, tree.ne.min, tree.sw.min, tree.se.min);
   tree.max = Math.max(tree.nw.max, tree.ne.max, tree.sw.max, tree.se.max);
+  debugger;
   delete tree.nw;
   delete tree.ne;
   delete tree.sw;

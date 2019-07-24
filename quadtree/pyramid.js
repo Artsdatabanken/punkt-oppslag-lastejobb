@@ -15,18 +15,15 @@ function build(tree) {
     (acc, e) => {
       acc.sum += e.v;
       acc.p += e.p;
-      acc.count++;
-      acc.min = Math.min(acc.min, e.v);
-      acc.max = Math.max(acc.max, e.v);
-      if (e.min) acc.min = Math.min(acc.min, e.min);
-      if (e.max) acc.max = Math.max(acc.max, e.max);
+      tree.min = tree.min === undefined ? e.min : Math.min(tree.min, e.min);
+      tree.max = tree.max === undefined ? e.max : Math.max(tree.max, e.max);
       return acc;
     },
-    { sum: 0, count: 0, min: 1e9, max: -1e9, p: 0 }
+    { sum: 0, p: 0 }
   );
-  if (!tree.v) tree.v = ~~(acc.sum / acc.count);
-  tree.min = Math.min(tree.v, acc.min);
-  tree.max = Math.max(tree.v, acc.max);
+  if (!tree.v) {
+    tree.v = ~~(acc.sum / items.length);
+  }
 }
 
 module.exports = {

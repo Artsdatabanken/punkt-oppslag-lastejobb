@@ -2,12 +2,13 @@ const quadtree = require("./index");
 
 test("compact same value in all", () => {
   const tree = {
-    nw: { p: 1, v: 1 },
-    ne: { p: 1, v: 1 },
-    sw: { p: 1, v: 1 },
-    se: { p: 1, v: 1 }
+    nw: { p: 1, v: 1, min: 1, max: 1 },
+    ne: { p: 1, v: 1, min: 1, max: 1 },
+    sw: { p: 1, v: 1, min: 0, max: 1 },
+    se: { p: 1, v: 1, min: 1, max: 2 }
   };
-  const expected = '{"v":1,"p":1}';
+  const expected = '{"v":1,"p":1,"min":0,"max":2}';
+
   testCompact(tree, expected);
 });
 
@@ -40,7 +41,8 @@ test("compact without full cover if we say so", () => {
     sw: { p: 0.5, v: 1 },
     se: { p: 1, v: 1 }
   };
-  const expected = '{"v":1,"p":0.875}';
+  const expected = '{"v":1,"p":0.875,"min":null,"max":null}';
+
   testCompact(tree, expected, { compactAnyP: true });
 });
 
