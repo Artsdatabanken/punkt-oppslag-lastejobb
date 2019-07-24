@@ -18,33 +18,24 @@ function equalChildren(tree, options = { compactAnyP: true }) {
   }
 
   let value = 0;
-  if (tree.nw) {
-    if (!tree.nw.v) return;
-    if (value && value != tree.nw.v) return;
-    value = tree.nw.v;
-  }
-  if (tree.ne) {
-    if (!tree.ne.v) return;
-    if (value && value != tree.ne.v) return;
-    value = tree.ne.v;
-  }
-  if (tree.sw) {
-    if (!tree.sw.v) return;
-    if (value && value != tree.sw.v) return;
-    value = tree.sw.v;
-  }
-  if (tree.se) {
-    if (!tree.se.v) return;
-    if (value && value != tree.se.v) return;
-    value = tree.se.v;
-  }
+  if (!tree.nw.v) return;
+  if (value && value != tree.nw.v) return;
+  value = tree.nw.v;
+  if (!tree.ne.v) return;
+  if (value && value != tree.ne.v) return;
+  value = tree.ne.v;
+  if (!tree.sw.v) return;
+  if (value && value != tree.sw.v) return;
+  value = tree.sw.v;
+  if (!tree.se.v) return;
+  if (value && value != tree.se.v) return;
+  value = tree.se.v;
 
   // All quads have the same value, remove and set the value on parent
   tree.v = value;
   tree.p = 0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p);
   tree.min = Math.min(tree.nw.min, tree.ne.min, tree.sw.min, tree.se.min);
   tree.max = Math.max(tree.nw.max, tree.ne.max, tree.sw.max, tree.se.max);
-  if (!tree.p) debugger;
   delete tree.nw;
   delete tree.ne;
   delete tree.sw;
@@ -68,7 +59,7 @@ function removeP(tree) {
   removeP(tree.ne);
   removeP(tree.sw);
   removeP(tree.se);
-  //  delete tree.p;
+  delete tree.p;
 }
 
 module.exports = { equalChildren, quantizeValues, removeP };

@@ -46,10 +46,13 @@ function add(tree, bounds, z, value) {
     (bounds[0] === 0 && bounds[1] === 0 && bounds[2] === 1 && bounds[3] === 1);
   if (stop) {
     const p = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
-    tree.min = tree.min === undefined ? tree.v : Math.min(tree.v, tree.min);
-    tree.max = tree.max === undefined ? tree.v : Math.max(tree.v, tree.max);
+    tree.min = Math.min(value, tree.min);
+    tree.max = Math.max(value, tree.max);
+    if(tree.v>tree.max)debugger
     if (tree.v === undefined) tree.v = value;
     else tree.v = (tree.v * tree.p) / (tree.p + p) + (value * p) / (tree.p + p);
+    if (tree.v < tree.min) debugger;
+    if (tree.v > tree.max) debugger;
 
     tree.p = (tree.p || 0) + p;
     return;
