@@ -3,6 +3,7 @@ const GeoTIFF = require("geotiff");
 const quadtree = require("./quadtree");
 const geometry = require("./geometry");
 const filesystemwriter = require("./filesystemwriter");
+const fs = require("fs");
 
 const tree = {
   bounds: { left: -2500000, bottom: 3500000, right: 3045984, top: 9045984 }
@@ -25,12 +26,20 @@ async function processTiff(meta) {
   index(rasters[0], bbox, width, height, meta);
 }
 
+function erNullverdi(value, nullverdier) {
+  if (Array.isArray(nullverdier))
+    for (let i = 0; i < nullverdier.length; i++)
+      if (value === nullverdier[i]) return true;
+  if (value === nullverdier) return true;
+  return false;
+}
+
 function index(raster, bbox, width, height, meta) {
   for (var y = 0; y < height; y++)
     for (var x = 0; x < width; x++) {
       const offset = y * width + x;
       const value = raster[offset];
-      if (value === meta.nullverdi) continue;
+      if (erNullverdi(value, meta.nullverdi)) continue;
       const qvalue = quantize(meta.intervall, value);
       if (qvalue > meta.intervall.normalisertVerdi[1]) {
         console.log(value, qvalue);
@@ -80,10 +89,10 @@ function processDataset(metaPath) {
     quadtree.compact.quantizeValues(tree);
     const stats = quadtree.statistics.summarize(tree);
     console.log(quadtree.find(tree, coords[0], coords[1], 42));
-    filesystemwriter.write(tree, "./data", meta);
+    //filesystemwriter.write(tree, "./data", meta);
     //    fs.writeFileSync("stats.json", JSON.stringify(stats));
     //    fs.writeFileSync("x.json", JSON.stringify(r));
-    //    fs.writeFileSync("tree.json", JSON.stringify(tree));
+    fs.writeFileSync("tree.json", JSON.stringify(tree));
   });
 }
 
