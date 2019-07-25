@@ -15,7 +15,7 @@ function updateFile(node, datapath, config) {
   io.mkdir(datapath);
   const filePath = path.join(datapath, "index.json");
   const data = readExisting(filePath);
-  data[config.key] = {
+  data[config.name] = {
     v: node.v,
     min: node.min,
     max: node.max
