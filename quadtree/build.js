@@ -8,7 +8,7 @@ const quadBound = {
 
 function addChild(tree, dir, bounds, z, value) {
   bounds = clip(bounds, quadBound[dir]);
-  if (!hasArea(bounds)) return;
+  if (!hasArea(bounds, z)) return;
   if (!tree[dir]) tree[dir] = {};
   bounds = normalizeToNextZoom(bounds, quadBound[dir]);
   add(tree[dir], bounds, z - 1, value);
@@ -32,8 +32,8 @@ function clip(aarect, bounds) {
   ];
 }
 
-function hasArea(aabb) {
-  const epsilon = 1e-4;
+function hasArea(aabb, z) {
+  const epsilon = 1e-4 * Math.pow(0.5, z);
   if (aabb[0] >= aabb[2] - epsilon) return false;
   if (aabb[1] >= aabb[3] - epsilon) return false;
   return true;
@@ -41,7 +41,7 @@ function hasArea(aabb) {
 
 function add(tree, bounds, z, value) {
   bounds = clip(bounds, quadBound.parent);
-  if (!hasArea(bounds)) return;
+  if (!hasArea(bounds, z)) return;
   const stop =
     z === 0 ||
     (bounds[0] === 0 && bounds[1] === 0 && bounds[2] === 1 && bounds[3] === 1);
