@@ -41,14 +41,14 @@ function processDataset(layer) {
   );
   processTiff(layer)
     .then(x => {
-      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
+      //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
       quadtree.compact.equalChildren(tree);
       quadtree.addPyramid(tree);
       quadtree.compact.quantizeValues(tree);
       const stats = quadtree.statistics.summarize(tree);
       quadtree.compact.removeP(tree);
       //      console.log(quadtree.find(tree, coords[0], coords[1], 42));
-      filesystemwriter.write(tree, basePath, layer);
+      filesystemwriter.write(tree, path.join(basePath, tree.buildPath), layer);
       fs.writeFileSync(
         path.join(basePath, layer.Name + "_stats.json"),
         JSON.stringify(stats)
