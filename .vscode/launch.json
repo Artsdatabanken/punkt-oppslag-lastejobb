@@ -8,7 +8,8 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${file}"
+      "program": "${workspaceFolder}/index.js",
+      "args": ["example/ssb-bbox", "telemark"]
     },
     {
       "type": "node",
