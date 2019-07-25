@@ -1,5 +1,5 @@
 {
-  "name": "bore-api",
+  "name": "punkt-oppslag-lastejobb",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "geotiff": "^1.0.0-beta.6",
