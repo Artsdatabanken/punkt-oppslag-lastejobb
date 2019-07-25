@@ -4,5 +4,17 @@
     "bottom": 3500000,
     "right": 3045984,
     "top": 9045984
+  },
+  "layers": {
+    "telemark": {
+      "source": "../telemark.tif",
+      "zoom": 7,
+      "nullverdi": [0],
+      "assumeNotPresentWhenNoData": true,
+      "intervall": {
+        "original": [0, 255],
+        "normalisertVerdi": [0, 1]
+      }
+    }
   }
 }
