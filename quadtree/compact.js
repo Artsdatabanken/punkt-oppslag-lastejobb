@@ -1,5 +1,6 @@
 function pullFromChild(child, value) {
   if (!child.v) return false;
+  if (!child.p) return false;
   if (value && value != child.v) return false;
   return true;
 }
@@ -26,7 +27,7 @@ function equalChildren(tree, options = { compactAnyP: true }) {
   let value = 0;
   if (!pullFromChild(tree.nw, value)) return false;
   value = tree.nw.v;
-  if (!pullFromChild(tree.nw, value)) return false;
+  if (!pullFromChild(tree.ne, value)) return false;
   value = tree.ne.v;
   if (!pullFromChild(tree.sw, value)) return false;
   value = tree.sw.v;
@@ -38,11 +39,6 @@ function equalChildren(tree, options = { compactAnyP: true }) {
   tree.p = 0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p);
   tree.min = Math.min(tree.nw.min, tree.ne.min, tree.sw.min, tree.se.min);
   tree.max = Math.max(tree.nw.max, tree.ne.max, tree.sw.max, tree.se.max);
-  if (!tree.nw.max) throw new Error("--");
-  if (!tree.ne.max) throw new Error("--");
-  if (!tree.sw.max) throw new Error("--");
-  if (!tree.se.max) throw new Error("--");
-  debugger;
   delete tree.nw;
   delete tree.ne;
   delete tree.sw;
