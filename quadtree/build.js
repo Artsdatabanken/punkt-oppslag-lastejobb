@@ -34,8 +34,8 @@ function clip(aarect, bounds) {
 
 function hasArea(aabb) {
   const epsilon = 1e-4;
-  if (aabb[0] >= aabb[2] + epsilon) return false;
-  if (aabb[1] >= aabb[3] + epsilon) return false;
+  if (aabb[0] >= aabb[2] - epsilon) return false;
+  if (aabb[1] >= aabb[3] - epsilon) return false;
   return true;
 }
 
