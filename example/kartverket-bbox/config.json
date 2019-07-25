@@ -13,7 +13,7 @@
       "assumeNotPresentWhenNoData": true,
       "intervall": {
         "original": [0, 255],
-        "normalisertVerdi": [0, 1]
+        "normalisertVerdi": [0, 255]
       }
     }
   }
