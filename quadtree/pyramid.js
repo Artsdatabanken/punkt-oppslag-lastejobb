@@ -22,7 +22,7 @@ function build(tree) {
     { sum: 0, p: 0 }
   );
   if (!tree.v) {
-    tree.v = ~~(acc.sum / items.length);
+    tree.v = ~~(0.25 * acc.sum);
   }
   tree.p = (tree.p || 0) + 0.25 * acc.p;
 }
