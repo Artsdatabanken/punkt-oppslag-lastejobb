@@ -9,9 +9,15 @@ const path = require("path");
 if (process.argv.length !== 3)
   return console.log("Usage: node punkt-oppslag-lastejobb <dataDirectory>");
 const basePath = process.argv[2];
-const tree = lastejobb.io.readJson(path.join(basePath, "config.json"));
-tree.bounds.width = tree.bounds.right - tree.bounds.left;
-tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
+const tree = readConfig(basePath);
+
+function readConfig(basePath) {
+  const tree = lastejobb.io.readJson(path.join(basePath, "config.json"));
+  console.log("Bounds:               " + JSON.stringify(tree.bounds));
+  tree.bounds.width = tree.bounds.right - tree.bounds.left;
+  tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
+  return tree;
+}
 
 async function processTiff(meta) {
   const gt = await GeoTIFF.fromFile(meta.mapFile);
