@@ -4,10 +4,12 @@ const quadtree = require("./quadtree");
 const geometry = require("./geometry");
 const filesystemwriter = require("./filesystemwriter");
 const fs = require("fs");
+const path = require("path");
 
-const tree = {
-  bounds: { left: -2500000, bottom: 3500000, right: 3045984, top: 9045984 }
-};
+if (process.argv.length !== 3)
+  return console.log("Usage: node punkt-oppslag-lastejobb <dataDirectory>");
+const basePath = process.argv[2];
+const tree = lastejobb.io.readJson(path.join(basePath, "config.json"));
 tree.bounds.width = tree.bounds.right - tree.bounds.left;
 tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
 
