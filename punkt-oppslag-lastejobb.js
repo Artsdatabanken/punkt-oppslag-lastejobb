@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const lastejobb = require("lastejobb");
 const GeoTIFF = require("geotiff");
 const quadtree = require("./quadtree");
