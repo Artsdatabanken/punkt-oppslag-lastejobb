@@ -6,10 +6,17 @@ const filesystemwriter = require("./filesystemwriter");
 const fs = require("fs");
 const path = require("path");
 
-if (process.argv.length !== 3)
-  return console.log("Usage: node punkt-oppslag-lastejobb <dataDirectory>");
+if (process.argv.length !== 4)
+  return console.log(
+    "Usage: node punkt-oppslag-lastejobb <dataDirectory> <datasetName>"
+  );
 const basePath = process.argv[2];
 const tree = readConfig(basePath);
+const datasetName = process.argv[3];
+const layer = tree.layers[datasetName];
+if (!layer)
+  return console.warn(`Dataset ${datasetName} not present in ${basePath}`);
+processDataset(layer);
 
 function readConfig(basePath) {
   const tree = lastejobb.io.readJson(path.join(basePath, "config.json"));
@@ -17,6 +24,38 @@ function readConfig(basePath) {
   tree.bounds.width = tree.bounds.right - tree.bounds.left;
   tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
   return tree;
+}
+
+function processDataset(layer) {
+  layer.mapFile = path.join(basePath, layer.source);
+  const intervall = layer.intervall;
+  intervall.original.bredde = intervall.original[1] - intervall.original[0];
+  intervall.normalisertVerdi.bredde =
+    intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
+  console.log("Zoom limit:           " + layer.zoom);
+  console.log(
+    "Effective resolution: " +
+      tree.bounds.width * Math.pow(0.5, layer.zoom) +
+      " meters"
+  );
+  processTiff(layer)
+    .then(x => {
+      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
+      quadtree.compact.equalChildren(tree);
+      quadtree.addPyramid(tree);
+      quadtree.compact.quantizeValues(tree);
+      const stats = quadtree.statistics.summarize(tree);
+      console.log(stats);
+      quadtree.compact.removeP(tree);
+      console.log(quadtree.find(tree, coords[0], coords[1], 42));
+      //filesystemwriter.write(tree, "./data", meta);
+      fs.writeFileSync("stats.json", JSON.stringify(stats));
+      //    fs.writeFileSync("x.json", JSON.stringify(r));
+      //    fs.writeFileSync("tree.json", JSON.stringify(tree));
+    })
+    .catch(e => {
+      console.error(e);
+    });
 }
 
 async function processTiff(meta) {
@@ -75,41 +114,3 @@ function getPixelCoords(bbox, x, y, width, height) {
   const coY = bbox[3] - y * metersPerPixelY;
   return [coX, coY - metersPerPixelY, coX + metersPerPixelX, coY];
 }
-
-function processDataset(metaPath) {
-  const meta = lastejobb.io.readJson(metaPath);
-  meta.mapFile = metaPath.replace(".json", ".tif");
-  const intervall = meta.intervall;
-  intervall.original.bredde = intervall.original[1] - intervall.original[0];
-  intervall.normalisertVerdi.bredde =
-    intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
-  console.log("Zoom limit:           " + meta.zoom);
-  console.log(
-    "Effective resolution: " +
-      tree.bounds.width * Math.pow(0.5, meta.zoom) +
-      " meters"
-  );
-  processTiff(meta)
-    .then(x => {
-      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-      quadtree.compact.equalChildren(tree);
-      quadtree.addPyramid(tree);
-      quadtree.compact.quantizeValues(tree);
-      const stats = quadtree.statistics.summarize(tree);
-      console.log(stats);
-      quadtree.compact.removeP(tree);
-      console.log(quadtree.find(tree, coords[0], coords[1], 42));
-      //filesystemwriter.write(tree, "./data", meta);
-      fs.writeFileSync("stats.json", JSON.stringify(stats));
-      //    fs.writeFileSync("x.json", JSON.stringify(r));
-      //    fs.writeFileSync("tree.json", JSON.stringify(tree));
-    })
-    .catch(e => {
-      console.error(e);
-    });
-}
-
-//processDataset("data/NA-LKM-S3-F.json");
-//processDataset("data/KLG-BP.json");
-//processDataset("data/KLG-KA.json");
-processDataset("data/NN-LA-KLG-AI.json");
