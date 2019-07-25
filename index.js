@@ -12,10 +12,11 @@ if (process.argv.length !== 4)
   );
 const basePath = process.argv[2];
 const tree = readConfig(basePath);
-const datasetName = process.argv[3];
-const layer = tree.layers[datasetName];
+const layerName = process.argv[3];
+const layer = tree.layers[layerName];
 if (!layer)
-  return console.warn(`Dataset ${datasetName} not present in ${basePath}`);
+  return console.warn(`Dataset ${layerName} not present in ${basePath}`);
+layer.name = layerName;
 processDataset(layer);
 
 function readConfig(basePath) {
@@ -45,11 +46,13 @@ function processDataset(layer) {
       quadtree.addPyramid(tree);
       quadtree.compact.quantizeValues(tree);
       const stats = quadtree.statistics.summarize(tree);
-      console.log(stats);
       quadtree.compact.removeP(tree);
-      console.log(quadtree.find(tree, coords[0], coords[1], 42));
-      //filesystemwriter.write(tree, "./data", meta);
-      fs.writeFileSync("stats.json", JSON.stringify(stats));
+      //      console.log(quadtree.find(tree, coords[0], coords[1], 42));
+      filesystemwriter.write(tree, basePath, layer);
+      fs.writeFileSync(
+        path.join(basePath, layer.Name + "_stats.json"),
+        JSON.stringify(stats)
+      );
       //    fs.writeFileSync("x.json", JSON.stringify(r));
       //    fs.writeFileSync("tree.json", JSON.stringify(tree));
     })
