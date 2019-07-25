@@ -18,7 +18,9 @@ function updateFile(node, datapath, config) {
   data[config.name] = {
     v: node.v,
     min: node.min,
-    max: node.max
+    max: node.max,
+    var: node.var,
+    n: node.n
   };
   writeFile(filePath, data);
 }

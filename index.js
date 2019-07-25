@@ -42,8 +42,9 @@ function processDataset(layer) {
   processTiff(layer)
     .then(x => {
       //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-      quadtree.compact.equalChildren(tree);
       quadtree.addPyramid(tree);
+      quadtree.variance.add(tree);
+      quadtree.compact.equalChildren(tree);
       quadtree.compact.quantizeValues(tree);
       const stats = quadtree.statistics.summarize(tree);
       quadtree.compact.removeP(tree);
