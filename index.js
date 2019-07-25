@@ -50,7 +50,7 @@ function processDataset(layer) {
       //      console.log(quadtree.find(tree, coords[0], coords[1], 42));
       filesystemwriter.write(tree, path.join(basePath, tree.buildPath), layer);
       fs.writeFileSync(
-        path.join(basePath, layer.Name + "_stats.json"),
+        path.join(basePath, layer.name + "_stats.json"),
         JSON.stringify(stats)
       );
       //    fs.writeFileSync("x.json", JSON.stringify(r));
