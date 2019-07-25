@@ -5,6 +5,7 @@
     "right": 3045984,
     "top": 9045984
   },
+  "buildPath": "./build",
   "layers": {
     "telemark": {
       "source": "../telemark.tif",
