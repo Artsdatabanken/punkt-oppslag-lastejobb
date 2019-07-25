@@ -12,7 +12,7 @@ Usage: npx punkt-oppslag-lastejobb <dataDirectory> <datasetName>
 node index.js example/ssb-bbox telemark
 ```
 
-### Example of rasterizing a geojson
+### Example of rasterizing a GeoJSON
 
 ```bash
 wget https://data.artsdatabanken.no/Fylke/Telemark/polygon.32633.geojson
