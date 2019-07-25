@@ -93,7 +93,7 @@ function index(raster, bbox, width, height, meta) {
       const value = raster[offset];
       if (erNullverdi(value, meta.nullverdi)) continue;
       const qvalue = quantize(meta.intervall, value);
-      if (qvalue > meta.intervall.normalisertVerdi[1])
+      if (Math.round(qvalue) > meta.intervall.normalisertVerdi[1])
         throw new Error("Value out of range.  In:" + value + " Out:" + qvalue);
       const coords = getPixelCoords(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
