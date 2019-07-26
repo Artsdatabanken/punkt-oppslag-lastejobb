@@ -40,16 +40,24 @@ function processDataset(layer) {
       tree.bounds.width * Math.pow(0.5, layer.zoom) +
       " meters"
   );
+  console.log("Reading:           " + layer.source);
   processTiff(layer)
     .then(x => {
       //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
+      console.log("Building pyramid");
       quadtree.addPyramid(tree);
+      console.log("Calculating variance");
       quadtree.variance.add(tree);
+      console.log("Pruning");
       quadtree.compact.equalChildren(tree);
+      console.log("Quantizing");
       quadtree.compact.quantizeValues(tree);
+      console.log("Generating summary");
       const stats = quadtree.statistics.summarize(tree);
+      console.log("Cleanup");
       quadtree.compact.removeP(tree);
       //      console.log(quadtree.find(tree, coords[0], coords[1], 42));
+      console.log("Writing files...");
       filesystemwriter.write(tree, path.join(basePath, tree.buildPath), layer);
       fs.writeFileSync(
         path.join(basePath, layer.name + "_stats.json"),
