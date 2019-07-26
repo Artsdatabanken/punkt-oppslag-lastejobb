@@ -44,7 +44,7 @@ function pruneChildren(tree, options = { compactAnyP: true }) {
   delete tree.ne;
   delete tree.sw;
   delete tree.se;
-  count += 4;
+  return count + 4;
 }
 
 function quantizeValues(tree) {
