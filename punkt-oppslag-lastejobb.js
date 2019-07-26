@@ -44,12 +44,13 @@ function processDataset(layer) {
   processTiff(layer)
     .then(x => {
       //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-      console.log("Building pyramid");
+      console.log("Building pyramid...");
       quadtree.addPyramid(tree);
-      console.log("Calculating variance");
+      console.log("Calculating variance...");
       quadtree.statistics.variance.add(tree);
-      console.log("Pruning");
-      quadtree.compact.equalChildren(tree);
+      console.log("Pruning...");
+      const pruneCount = quadtree.compact.pruneChildren(tree);
+      console.log("Pruned " + pruneCount + " tiles.");
       console.log("Quantizing");
       quadtree.compact.quantizeValues(tree);
       console.log("Generating summary");
@@ -83,6 +84,7 @@ async function processTiff(meta) {
   const rasters = await image.readRasters();
   if (rasters.length !== 1)
     throw new Error("Can only handle GeoTiff containing single raster.");
+  console.log("Indexing " + width + "x" + height + " raster");
   index(rasters[0], bbox, width, height, meta);
 }
 

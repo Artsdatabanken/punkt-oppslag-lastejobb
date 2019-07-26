@@ -5,33 +5,34 @@ function pullFromChild(child, value) {
   return true;
 }
 
-function equalChildren(tree, options = { compactAnyP: true }) {
-  if (!tree) return;
-  equalChildren(tree.nw);
-  equalChildren(tree.ne);
-  equalChildren(tree.sw);
-  equalChildren(tree.se);
+function pruneChildren(tree, options = { compactAnyP: true }) {
+  let count = 0;
+  if (!tree) return count;
+  count += pruneChildren(tree.nw);
+  count += pruneChildren(tree.ne);
+  count += pruneChildren(tree.sw);
+  count += pruneChildren(tree.se);
 
-  if (!tree.nw) return;
-  if (!tree.ne) return;
-  if (!tree.sw) return;
-  if (!tree.se) return;
+  if (!tree.nw) return count;
+  if (!tree.ne) return count;
+  if (!tree.sw) return count;
+  if (!tree.se) return count;
 
   if (!options.compactAnyP) {
-    if (tree.nw.p !== 1) return;
-    if (tree.ne.p !== 1) return;
-    if (tree.sw.p !== 1) return;
-    if (tree.se.p !== 1) return;
+    if (tree.nw.p !== 1) return count;
+    if (tree.ne.p !== 1) return count;
+    if (tree.sw.p !== 1) return count;
+    if (tree.se.p !== 1) return count;
   }
 
   let value = 0;
-  if (!pullFromChild(tree.nw, value)) return false;
+  if (!pullFromChild(tree.nw, value)) return count;
   value = tree.nw.v;
-  if (!pullFromChild(tree.ne, value)) return false;
+  if (!pullFromChild(tree.ne, value)) return count;
   value = tree.ne.v;
-  if (!pullFromChild(tree.sw, value)) return false;
+  if (!pullFromChild(tree.sw, value)) return count;
   value = tree.sw.v;
-  if (!pullFromChild(tree.se, value)) return false;
+  if (!pullFromChild(tree.se, value)) return count;
   value = tree.se.v;
 
   // All quads have the same value, remove and set the value on parent
@@ -43,6 +44,7 @@ function equalChildren(tree, options = { compactAnyP: true }) {
   delete tree.ne;
   delete tree.sw;
   delete tree.se;
+  count += 4;
 }
 
 function quantizeValues(tree) {
@@ -65,4 +67,4 @@ function removeP(tree) {
   delete tree.p;
 }
 
-module.exports = { equalChildren, quantizeValues, removeP };
+module.exports = { pruneChildren, quantizeValues, removeP };
