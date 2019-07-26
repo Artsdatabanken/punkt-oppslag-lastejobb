@@ -1,3 +1,5 @@
+const variance = require("./variance");
+
 function dive(tree, acc, z) {
   if (!tree) return;
   acc.zoom[z] = acc.zoom[z] || { count: 0, area: 0, min: 1e9, max: -1e9 };
@@ -41,4 +43,4 @@ function summarize(tree) {
   return acc;
 }
 
-module.exports = { summarize };
+module.exports = { summarize, variance };

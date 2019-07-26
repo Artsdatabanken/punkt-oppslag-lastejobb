@@ -47,7 +47,7 @@ function processDataset(layer) {
       console.log("Building pyramid");
       quadtree.addPyramid(tree);
       console.log("Calculating variance");
-      quadtree.variance.add(tree);
+      quadtree.statistics.variance.add(tree);
       console.log("Pruning");
       quadtree.compact.equalChildren(tree);
       console.log("Quantizing");
