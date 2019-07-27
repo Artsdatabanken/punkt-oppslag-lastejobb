@@ -1,28 +1,29 @@
 #!/usr/bin/env node
 const lastejobb = require("lastejobb");
+const { log } = require("lastejobb");
 const GeoTIFF = require("geotiff");
 const quadtree = require("./quadtree");
 const geometry = require("./geometry");
 const filesystemwriter = require("./writer/filesystemwriter");
+const mbtileswriter = require("./writer/mbtileswriter");
 const fs = require("fs");
 const path = require("path");
 
 if (process.argv.length !== 4)
-  return console.log(
+  return log.info(
     "Usage: node punkt-oppslag-lastejobb <dataDirectory> <datasetName>"
   );
 const basePath = process.argv[2];
 const tree = readConfig(basePath);
 const layerName = process.argv[3];
 const layer = tree.layers[layerName];
-if (!layer)
-  return console.warn(`Dataset ${layerName} not present in ${basePath}`);
+if (!layer) return log.warn(`Dataset ${layerName} not present in ${basePath}`);
 layer.name = layerName;
 processDataset(layer);
 
 function readConfig(basePath) {
   const tree = lastejobb.io.readJson(path.join(basePath, "config.json"));
-  console.log("Bounds:               " + JSON.stringify(tree.bounds));
+  log.info("Bounds:               " + JSON.stringify(tree.bounds));
   tree.bounds.width = tree.bounds.right - tree.bounds.left;
   tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
   return tree;
@@ -34,32 +35,34 @@ function processDataset(layer) {
   intervall.original.bredde = intervall.original[1] - intervall.original[0];
   intervall.normalisertVerdi.bredde =
     intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
-  console.log("Zoom limit:           " + layer.zoom);
-  console.log(
+  log.info("Zoom limit:           " + layer.zoom);
+  log.info(
     "Effective resolution: " +
       tree.bounds.width * Math.pow(0.5, layer.zoom) +
       " meters"
   );
-  console.log("Reading:           " + layer.source);
+  log.info("Reading:           " + layer.source);
   processTiff(layer)
     .then(x => {
       //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-      console.log("Building pyramid...");
+      log.info("Building pyramid...");
       quadtree.addPyramid(tree);
-      console.log("Calculating variance...");
+      log.info("Calculating variance...");
       quadtree.statistics.variance.add(tree);
-      console.log("Pruning...");
+      log.info("Pruning...");
       const pruneCount = quadtree.compact.pruneChildren(tree);
-      console.log("Pruned " + pruneCount + " tiles.");
-      console.log("Quantizing");
+      log.info("Pruned " + pruneCount + " tiles.");
+      log.info("Quantizing");
       quadtree.compact.quantizeValues(tree);
-      console.log("Generating summary");
+      log.info("Generating summary");
       const stats = quadtree.statistics.summarize(tree);
-      console.log("Cleanup");
+      log.info("Cleanup");
       quadtree.compact.removeP(tree);
-      //      console.log(quadtree.find(tree, coords[0], coords[1], 42));
-      console.log("Writing files...");
-      filesystemwriter.write(tree, path.join(basePath, tree.buildPath), layer);
+      //      log.info(quadtree.find(tree, coords[0], coords[1], 42));
+      log.info("Writing tiles...");
+      //      filesystemwriter.write(tree, path.join(basePath, tree.buildPath), layer);
+      mbtileswriter.writeAll(tree, path.join(basePath, tree.buildPath), layer);
+
       fs.writeFileSync(
         path.join(basePath, layer.name + "_stats.json"),
         JSON.stringify(stats)
@@ -68,7 +71,7 @@ function processDataset(layer) {
       //    fs.writeFileSync("tree.json", JSON.stringify(tree));
     })
     .catch(e => {
-      console.error(e);
+      log.error(e);
     });
 }
 
@@ -84,7 +87,7 @@ async function processTiff(meta) {
   const rasters = await image.readRasters();
   if (rasters.length !== 1)
     throw new Error("Can only handle GeoTiff containing single raster.");
-  console.log("Indexing " + width + "x" + height + " raster");
+  log.info("Indexing " + width + "x" + height + " raster");
   index(rasters[0], bbox, width, height, meta);
 }
 

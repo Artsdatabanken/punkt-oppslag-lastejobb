@@ -7,6 +7,7 @@ function readExisting(datapath) {
   const data = fs.readFileSync(datapath);
   return JSON.parse(data);
 }
+
 function writeFile(datapath, data) {
   fs.writeFileSync(datapath, JSON.stringify(data));
 }
