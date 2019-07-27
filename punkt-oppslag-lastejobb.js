@@ -3,7 +3,7 @@ const lastejobb = require("lastejobb");
 const GeoTIFF = require("geotiff");
 const quadtree = require("./quadtree");
 const geometry = require("./geometry");
-const filesystemwriter = require("./filesystemwriter");
+const filesystemwriter = require("./writer/filesystemwriter");
 const fs = require("fs");
 const path = require("path");
 
