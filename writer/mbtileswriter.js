@@ -19,7 +19,15 @@ async function writeTile(db, key, buffer) {
 async function updateTile(node, db, config, key) {
   const tile = await readTile(db, key);
   const o = tile ? JSON.parse(tile) : {};
-  o[config.name] = node;
+
+  o[config.name] = {
+    v: node.v,
+    min: node.min,
+    max: node.max,
+    var: node.var
+    //    n: node.n
+  };
+
   writeTile(db, key, JSON.stringify(o));
 }
 
