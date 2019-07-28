@@ -7,23 +7,24 @@ const path = require("path");
 async function readTile(db, key) {
   log.debug(`Read tile ${key}`);
   const sql = "SELECT tile_data FROM tiles WHERE key=?";
-  await readdb(db, sql, [key]);
+  return await readdb(db, sql, [key]);
 }
 
 async function writeTile(db, key, buffer, update) {
-  log.debug(`Write tile ${key}`);
   if (update) {
+    log.debug(`Update tile ${key}`);
     const sql = "UPDATE tiles SET tile_data=? WHERE key=?";
-    writedb(db, sql, [buffer, key]);
+    await writedb(db, sql, [buffer, key]);
   } else {
+    log.debug(`Create tile ${key}`);
     const sql = "INSERT INTO tiles VALUES (?,?);";
-    writedb(db, sql, [key, buffer]);
+    await writedb(db, sql, [key, buffer]);
   }
 }
 
 async function updateTile(node, db, config, key) {
   const tile = await readTile(db, key);
-  const o = tile ? JSON.parse(tile) : {};
+  const o = tile ? JSON.parse(tile.tile_data) : {};
 
   o[config.name] = {
     v: node.v,
