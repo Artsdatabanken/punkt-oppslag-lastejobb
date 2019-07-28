@@ -89,6 +89,7 @@ async function openOrCreateDatabase(directory) {
 
 async function writeAll(node, directory, config) {
   const db = await openOrCreateDatabase(directory);
+  createIndex(db);
   write(node, db, config, "");
   db.close();
 }
