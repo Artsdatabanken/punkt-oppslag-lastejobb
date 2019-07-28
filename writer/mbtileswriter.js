@@ -76,12 +76,13 @@ async function openOrCreateDatabase(directory) {
   const sqlitePath = path.join(directory, "index.sqlite");
   log.info("Writing tiles to " + sqlitePath);
   if (fs.existsSync(sqlitePath)) return await open(sqlitePath);
-  return await createMbtile(sqlitePath, {});
+  const db = await createMbtile(sqlitePath, {});
+  createIndex(db);
+  return db;
 }
 
 async function writeAll(node, directory, config) {
   const db = await openOrCreateDatabase(directory);
-  createIndex(db);
   write(node, db, config, "");
   db.close();
 }
