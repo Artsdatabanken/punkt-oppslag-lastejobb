@@ -10,10 +10,15 @@ async function readTile(db, key) {
   await readdb(db, sql, [key]);
 }
 
-async function writeTile(db, key, buffer) {
+async function writeTile(db, key, buffer, update) {
   log.debug(`Write tile ${key}`);
-  const sql = "INSERT INTO tiles VALUES (?,?);";
-  writedb(db, sql, [key, buffer]);
+  if (update) {
+    const sql = "UPDATE tiles SET tile_data=? WHERE key=?";
+    writedb(db, sql, [buffer, key]);
+  } else {
+    const sql = "INSERT INTO tiles VALUES (?,?);";
+    writedb(db, sql, [key, buffer]);
+  }
 }
 
 async function updateTile(node, db, config, key) {
@@ -28,7 +33,7 @@ async function updateTile(node, db, config, key) {
     //    n: node.n
   };
 
-  writeTile(db, key, JSON.stringify(o));
+  writeTile(db, key, JSON.stringify(o), !!tile);
 }
 
 function open(file, flags = sqlite3.OPEN_READWRITE) {
