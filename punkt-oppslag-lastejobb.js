@@ -110,7 +110,7 @@ function index(raster, bbox, width, height, meta) {
         throw new Error("Value out of range.  In:" + value + " Out:" + qvalue);
       const coords = getPixelCoords(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
-      quadtree.add(tree, xy, meta.zoom, qvalue);
+      quadtree.add(tree, xy, meta.zoom, value);
     }
 }
 
