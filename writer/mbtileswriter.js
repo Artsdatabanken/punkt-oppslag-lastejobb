@@ -1,5 +1,5 @@
 const { log } = require("lastejobb");
-const { writeExec, readdb, writedb } = require("./sqlite");
+const { each, writeExec, readdb, writedb } = require("./sqlite");
 const fs = require("fs");
 const sqlite3 = require("sqlite3");
 const path = require("path");
@@ -57,6 +57,7 @@ async function createIndex(db) {
 }
 
 const directionToKey = { nw: 0, ne: 1, sw: 2, se: 3 };
+const keyToDirection = { 0: "nw", 1: "ne", 2: "sw", 3: "se" };
 
 function writeChild(tree, sourceDb, targetDb, config, key, direction) {
   const node = tree[direction];
@@ -88,13 +89,33 @@ async function createTargetDatabase(directory) {
   return db;
 }
 
+function hasKey(key, tree) {
+  if (key.length === 0) return true;
+  const dir = key[0];
+  key = key.substring(1);
+  const child = tree[keyToDirection[dir]];
+  if (!child) return false;
+  return hasKey(key, child);
+}
+
+function copyFromSource(src, target, tree) {
+  const sql = "SELECT * FROM TILES";
+  each(src, sql, e => {
+    if (!hasKey(e.key, tree)) {
+      writeTile(target, e.key, e.tile_data);
+      console.log(e.key);
+    }
+  });
+}
+
 async function writeAll(node, directory, config) {
   const source = await openPrevious(directory);
   const target = await createTargetDatabase(directory);
   write(node, source, target, config, "");
+  copyFromSource(source, target, node);
   createIndex(target);
-  if (source) source.close();
-  target.close();
+  //  if (source) source.close();
+  //  target.close();
 }
 
 module.exports = { open, readTile, writeAll, createMbtile, createIndex };
