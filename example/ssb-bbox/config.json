@@ -9,7 +9,7 @@
   "layers": {
     "telemark": {
       "source": "../telemark.tif",
-      "zoom": 7,
+      "zoom": 8,
       "nullverdi": [0],
       "assumeNotPresentWhenNoData": true,
       "intervall": {

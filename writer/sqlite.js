@@ -1,7 +1,7 @@
 const { log } = require("lastejobb");
 
-function writeExec(db, sql) {
-  log.debug("SQL   : " + sql);
+async function writeExec(db, sql) {
+  // log.debug("SQL   : " + sql);
   return new Promise((resolve, reject) => {
     db.exec(sql, (err, records) => {
       if (err) return reject(err);
@@ -10,8 +10,8 @@ function writeExec(db, sql) {
   });
 }
 
-function readdb(db, sql, args = []) {
-  log.debug("SQL   : " + sql);
+async function readdb(db, sql, args = []) {
+  // log.debug("SQL   : " + sql);
   return new Promise((resolve, reject) => {
     db.get(sql, args, (err, row) => {
       if (err) return reject(err);
@@ -20,15 +20,15 @@ function readdb(db, sql, args = []) {
   });
 }
 
-function each(db, sql, callback, args = []) {
-  log.debug("SQL   : " + sql);
+async function each(db, sql, callback, args = []) {
+  // log.debug("SQL   : " + sql);
   return new Promise((resolve, reject) => {
     db.each(
       sql,
       args,
       (err, row) => {
         if (err) return reject(err);
-        callback(row);
+        await callback(row);
       },
       complete => {
         debugger;
@@ -38,8 +38,8 @@ function each(db, sql, callback, args = []) {
   });
 }
 
-function writedb(db, sql, args = []) {
-  log.debug("SQL   : " + sql);
+async function writedb(db, sql, args = []) {
+  //  log.debug("SQL   : " + sql);
   return new Promise((resolve, reject) => {
     db.run(sql, args, err => {
       if (err) return reject(err);

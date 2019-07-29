@@ -8,7 +8,9 @@ const filesystemwriter = require("./writer/filesystemwriter");
 const mbtileswriter = require("./writer/mbtileswriter");
 const fs = require("fs");
 const path = require("path");
+const pkg = require("./package");
 
+log.info(pkg.name + " v" + pkg.version);
 if (process.argv.length !== 4)
   return log.info(
     "Usage: node punkt-oppslag-lastejobb <dataDirectory> <datasetName>"

@@ -7,13 +7,16 @@ const path = require("path");
 async function readTile(db, key) {
   log.debug(`Read tile ${key}`);
   const sql = "SELECT tile_data FROM tiles WHERE key=?";
-  return await readdb(db, sql, [key]);
+  const r = await readdb(db, sql, [key]);
+  log.debug(`Read tile ${key} OK`);
+  return r;
 }
 
 async function writeTile(db, key, buffer) {
   log.debug(`Create tile ${key}`);
   const sql = "INSERT INTO tiles VALUES (?,?);";
   await writedb(db, sql, [key, buffer]);
+  log.debug(`Create tile ${key} OK`);
 }
 
 async function updateTile(node, sourceDb, targetDb, config, key) {
@@ -28,7 +31,7 @@ async function updateTile(node, sourceDb, targetDb, config, key) {
     //    n: node.n
   };
 
-  writeTile(targetDb, key, JSON.stringify(o));
+  await writeTile(targetDb, key, JSON.stringify(o));
 }
 
 function open(file, flags = sqlite3.OPEN_READWRITE) {
@@ -59,18 +62,24 @@ async function createIndex(db) {
 const directionToKey = { nw: 0, ne: 1, sw: 2, se: 3 };
 const keyToDirection = { 0: "nw", 1: "ne", 2: "sw", 3: "se" };
 
-function writeChild(tree, sourceDb, targetDb, config, key, direction) {
+async function writeChild(tree, sourceDb, targetDb, config, key, direction) {
   const node = tree[direction];
-  write(node, sourceDb, targetDb, config, key + directionToKey[direction]);
+  await write(
+    node,
+    sourceDb,
+    targetDb,
+    config,
+    key + directionToKey[direction]
+  );
 }
 
-function write(node, sourceDb, targetDb, config, key) {
+async function write(node, sourceDb, targetDb, config, key) {
   if (!node) return;
-  updateTile(node, sourceDb, targetDb, config, key);
-  writeChild(node, sourceDb, targetDb, config, key, "nw");
-  writeChild(node, sourceDb, targetDb, config, key, "ne");
-  writeChild(node, sourceDb, targetDb, config, key, "sw");
-  writeChild(node, sourceDb, targetDb, config, key, "se");
+  await updateTile(node, sourceDb, targetDb, config, key);
+  await writeChild(node, sourceDb, targetDb, config, key, "nw");
+  await writeChild(node, sourceDb, targetDb, config, key, "ne");
+  await writeChild(node, sourceDb, targetDb, config, key, "sw");
+  await writeChild(node, sourceDb, targetDb, config, key, "se");
 }
 
 async function openPrevious(directory) {
@@ -98,21 +107,20 @@ function hasKey(key, tree) {
   return hasKey(key, child);
 }
 
-function copyFromSource(src, target, tree) {
+async function copyFromSource(src, target, tree) {
   const sql = "SELECT * FROM TILES";
-  each(src, sql, e => {
-    if (!hasKey(e.key, tree)) {
-      writeTile(target, e.key, e.tile_data);
-      console.log(e.key);
-    }
+  await each(src, sql, e => {
+    if (!hasKey(e.key, tree)) await writeTile(target, e.key, e.tile_data);
   });
 }
 
 async function writeAll(node, directory, config) {
   const source = await openPrevious(directory);
   const target = await createTargetDatabase(directory);
-  write(node, source, target, config, "");
-  copyFromSource(source, target, node);
+  log.info("Writing new tiles...");
+  await write(node, source, target, config, "");
+  log.info("Copy old tiles...");
+  await copyFromSource(source, target, node);
   createIndex(target);
   //  if (source) source.close();
   //  target.close();
