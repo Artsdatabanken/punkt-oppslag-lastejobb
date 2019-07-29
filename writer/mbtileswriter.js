@@ -10,20 +10,14 @@ async function readTile(db, key) {
   return await readdb(db, sql, [key]);
 }
 
-async function writeTile(db, key, buffer, update) {
-  if (update) {
-    log.debug(`Update tile ${key}`);
-    const sql = "UPDATE tiles SET tile_data=? WHERE key=?";
-    await writedb(db, sql, [buffer, key]);
-  } else {
-    log.debug(`Create tile ${key}`);
-    const sql = "INSERT INTO tiles VALUES (?,?);";
-    await writedb(db, sql, [key, buffer]);
-  }
+async function writeTile(db, key, buffer) {
+  log.debug(`Create tile ${key}`);
+  const sql = "INSERT INTO tiles VALUES (?,?);";
+  await writedb(db, sql, [key, buffer]);
 }
 
-async function updateTile(node, db, config, key) {
-  const tile = await readTile(db, key);
+async function updateTile(node, sourceDb, targetDb, config, key) {
+  const tile = sourceDb && (await readTile(sourceDb, key));
   const o = tile ? JSON.parse(tile.tile_data) : {};
 
   o[config.name] = {
@@ -34,7 +28,7 @@ async function updateTile(node, db, config, key) {
     //    n: node.n
   };
 
-  writeTile(db, key, JSON.stringify(o), !!tile);
+  writeTile(targetDb, key, JSON.stringify(o));
 }
 
 function open(file, flags = sqlite3.OPEN_READWRITE) {
@@ -64,34 +58,43 @@ async function createIndex(db) {
 
 const directionToKey = { nw: 0, ne: 1, sw: 2, se: 3 };
 
-function writeChild(tree, directory, config, key, direction) {
+function writeChild(tree, sourceDb, targetDb, config, key, direction) {
   const node = tree[direction];
-  write(node, directory, config, key + directionToKey[direction]);
+  write(node, sourceDb, targetDb, config, key + directionToKey[direction]);
 }
 
-function write(node, db, config, key) {
+function write(node, sourceDb, targetDb, config, key) {
   if (!node) return;
-  updateTile(node, db, config, key);
-  writeChild(node, db, config, key, "nw");
-  writeChild(node, db, config, key, "ne");
-  writeChild(node, db, config, key, "sw");
-  writeChild(node, db, config, key, "se");
+  updateTile(node, sourceDb, targetDb, config, key);
+  writeChild(node, sourceDb, targetDb, config, key, "nw");
+  writeChild(node, sourceDb, targetDb, config, key, "ne");
+  writeChild(node, sourceDb, targetDb, config, key, "sw");
+  writeChild(node, sourceDb, targetDb, config, key, "se");
 }
 
-async function openOrCreateDatabase(directory) {
+async function openPrevious(directory) {
   const sqlitePath = path.join(directory, "index.sqlite");
+  log.info("Merging with tiles from " + sqlitePath);
+  if (!fs.existsSync(sqlitePath)) return null;
+  return await open(sqlitePath, sqlite3.OPEN_READONLY);
+}
+
+async function createTargetDatabase(directory) {
+  const sqlitePath = path.join(directory, "new.sqlite");
+  if (fs.existsSync(sqlitePath))
+    throw new Error("Target database already exists: " + sqlitePath);
   log.info("Writing tiles to " + sqlitePath);
-  if (fs.existsSync(sqlitePath)) return await open(sqlitePath);
   const db = await createMbtile(sqlitePath, {});
-  createIndex(db);
   return db;
 }
 
 async function writeAll(node, directory, config) {
-  const db = await openOrCreateDatabase(directory);
-  createIndex(db);
-  write(node, db, config, "");
-  db.close();
+  const source = await openPrevious(directory);
+  const target = await createTargetDatabase(directory);
+  write(node, source, target, config, "");
+  createIndex(target);
+  if (source) source.close();
+  target.close();
 }
 
 module.exports = { open, readTile, writeAll, createMbtile, createIndex };

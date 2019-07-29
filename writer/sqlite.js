@@ -25,6 +25,7 @@ function readdb(db, sql, args = []) {
     });
   });
 }
+
 function writedb(db, sql, args = []) {
   log.debug("SQL   : " + sql);
   return new Promise((resolve, reject) => {
