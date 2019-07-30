@@ -89,7 +89,7 @@ async function processDataset(layer, tree) {
   //      log.info(quadtree.find(tree, coords[0], coords[1], 42));
   log.info("Writing tiles...");
   //      filesystemwriter.write(tree, buildPath, layer);
-  mbtileswriter.writeAll(tree, buildPath, layer);
+  await mbtileswriter.writeAll(tree, buildPath, layer);
 
   fs.writeFileSync(
     path.join(basePath, layer.name + "_stats.json"),
