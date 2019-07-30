@@ -28,7 +28,7 @@ async function each(db, sql, callback, args = []) {
       args,
       (err, row) => {
         if (err) return reject(err);
-        await callback(row);
+        callback(row);
       },
       complete => {
         debugger;

@@ -5,22 +5,27 @@ const sqlite3 = require("sqlite3");
 const path = require("path");
 
 async function readTile(db, key) {
-  log.debug(`Read tile ${key}`);
+  //  log.debug(`Read tile ${key}`);
   const sql = "SELECT tile_data FROM tiles WHERE key=?";
   const r = await readdb(db, sql, [key]);
-  log.debug(`Read tile ${key} OK`);
+  //log.debug(`Read tile ${key} OK`);
   return r;
 }
 
-async function writeTile(db, key, buffer) {
-  log.debug(`Create tile ${key}`);
-  const sql = "INSERT INTO tiles VALUES (?,?);";
-  await writedb(db, sql, [key, buffer]);
-  log.debug(`Create tile ${key} OK`);
+async function writeTile(db, key, buffer, exists) {
+  // log.debug(`Create tile ${key}`);
+  if (exists) {
+    const sql = "UPDATE tiles SET tile_data=? WHERE KEY=?;";
+    await writedb(db, sql, [buffer, key]);
+  } else {
+    const sql = "INSERT INTO tiles VALUES (?,?);";
+    await writedb(db, sql, [key, buffer]);
+  }
 }
 
 async function updateTile(node, sourceDb, targetDb, config, key) {
   const tile = sourceDb && (await readTile(sourceDb, key));
+  const exists = !!tile;
   const o = tile ? JSON.parse(tile.tile_data) : {};
 
   o[config.name] = {
@@ -31,7 +36,8 @@ async function updateTile(node, sourceDb, targetDb, config, key) {
     //    n: node.n
   };
 
-  await writeTile(targetDb, key, JSON.stringify(o));
+  const json = JSON.stringify(o);
+  if (json !== tile) await writeTile(targetDb, key, json, exists);
 }
 
 function open(file, flags = sqlite3.OPEN_READWRITE) {
@@ -86,7 +92,7 @@ async function openPrevious(directory) {
   const sqlitePath = path.join(directory, "index.sqlite");
   log.info("Merging with tiles from " + sqlitePath);
   if (!fs.existsSync(sqlitePath)) return null;
-  return await open(sqlitePath, sqlite3.OPEN_READONLY);
+  return await open(sqlitePath, sqlite3.OPEN_READWRITE || sqlite3.OPEN_CREATE);
 }
 
 async function createTargetDatabase(directory) {
@@ -110,18 +116,19 @@ function hasKey(key, tree) {
 async function copyFromSource(src, target, tree) {
   const sql = "SELECT * FROM TILES";
   await each(src, sql, e => {
-    if (!hasKey(e.key, tree)) await writeTile(target, e.key, e.tile_data);
+    if (!hasKey(e.key, tree)) writeTile(target, e.key, e.tile_data);
   });
 }
 
 async function writeAll(node, directory, config) {
   const source = await openPrevious(directory);
-  const target = await createTargetDatabase(directory);
+  const target = source;
+  //  const target = await createTargetDatabase(directory);
   log.info("Writing new tiles...");
   await write(node, source, target, config, "");
   log.info("Copy old tiles...");
-  await copyFromSource(source, target, node);
-  createIndex(target);
+  //  await copyFromSource(source, target, node);
+  //  createIndex(target);
   //  if (source) source.close();
   //  target.close();
 }
