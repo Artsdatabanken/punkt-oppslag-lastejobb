@@ -53,7 +53,7 @@ async function downloadMeta(layer, basePath) {
     .then(json => fs.writeFileSync(destPath, JSON.stringify(json)));
 }
 
-function processDataset(layer, tree) {
+async function processDataset(layer, tree) {
   log.info("Processing " + layer.name + "...");
   const buildPath = path.join(basePath, tree.buildPath);
   downloadMeta(layer, buildPath);
@@ -69,37 +69,37 @@ function processDataset(layer, tree) {
       " meters"
   );
   log.info("Reading:           " + layer.source);
-  processTiff(layer, tree)
-    .then(x => {
-      //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-      log.info("Building pyramid...");
-      quadtree.addPyramid(tree);
-      log.info("Calculating variance...");
-      quadtree.statistics.variance.add(tree);
-      log.info("Pruning...");
-      const pruneCount = quadtree.compact.pruneChildren(tree);
-      log.info("Pruned " + pruneCount + " tiles.");
-      //log.info("Quantizing");
-      //      quadtree.compact.quantizeValues(tree);
-      log.info("Generating summary");
-      const stats = quadtree.statistics.summarize(tree);
-      log.info("Cleanup");
-      quadtree.compact.removeP(tree);
-      //      log.info(quadtree.find(tree, coords[0], coords[1], 42));
-      log.info("Writing tiles...");
-      //      filesystemwriter.write(tree, buildPath, layer);
-      mbtileswriter.writeAll(tree, buildPath, layer);
+  await processTiff(layer, tree);
+  // .then(x => {
+  //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
+  log.info("Building pyramid...");
+  quadtree.addPyramid(tree);
+  log.info("Calculating variance...");
+  quadtree.statistics.variance.add(tree);
+  log.info("Pruning...");
+  const pruneCount = quadtree.compact.pruneChildren(tree);
+  log.info("Pruned " + pruneCount + " tiles.");
+  //log.info("Quantizing");
+  //      quadtree.compact.quantizeValues(tree);
+  log.info("Generating summary");
+  const stats = quadtree.statistics.summarize(tree);
+  log.info("Cleanup");
+  quadtree.compact.removeP(tree);
+  //      log.info(quadtree.find(tree, coords[0], coords[1], 42));
+  log.info("Writing tiles...");
+  //      filesystemwriter.write(tree, buildPath, layer);
+  mbtileswriter.writeAll(tree, buildPath, layer);
 
-      fs.writeFileSync(
-        path.join(basePath, layer.name + "_stats.json"),
-        JSON.stringify(stats)
-      );
-      //    fs.writeFileSync("x.json", JSON.stringify(r));
-      //    fs.writeFileSync("tree.json", JSON.stringify(tree));
-    })
-    .catch(e => {
-      log.error(e);
-    });
+  fs.writeFileSync(
+    path.join(basePath, layer.name + "_stats.json"),
+    JSON.stringify(stats)
+  );
+  //    fs.writeFileSync("x.json", JSON.stringify(r));
+  //    fs.writeFileSync("tree.json", JSON.stringify(tree));
+  // })
+  //  .catch(e => {
+  //    log.error(e);
+  //  });
 }
 
 async function processTiff(meta, tree) {
