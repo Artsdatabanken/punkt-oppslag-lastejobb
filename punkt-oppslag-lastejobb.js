@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const fetch = require("node-fetch");
 const lastejobb = require("lastejobb");
 const { log } = require("lastejobb");
 const GeoTIFF = require("geotiff");
@@ -43,8 +44,19 @@ function readConfig(basePath) {
   return tree;
 }
 
+async function downloadMeta(layer, basePath) {
+  const dir = path.join(basePath, "meta");
+  lastejobb.io.mkdir(dir);
+  const destPath = path.join(dir, layer.name + ".json");
+  fetch(layer.url + "/metadata.json")
+    .then(r => r.json())
+    .then(json => fs.writeFileSync(destPath, JSON.stringify(json)));
+}
+
 function processDataset(layer, tree) {
   log.info("Processing " + layer.name + "...");
+  const buildPath = path.join(basePath, tree.buildPath);
+  downloadMeta(layer, buildPath);
   layer.mapFile = path.join(basePath, layer.source);
   const intervall = layer.intervall;
   intervall.original.bredde = intervall.original[1] - intervall.original[0];
@@ -75,8 +87,8 @@ function processDataset(layer, tree) {
       quadtree.compact.removeP(tree);
       //      log.info(quadtree.find(tree, coords[0], coords[1], 42));
       log.info("Writing tiles...");
-      //      filesystemwriter.write(tree, path.join(basePath, tree.buildPath), layer);
-      mbtileswriter.writeAll(tree, path.join(basePath, tree.buildPath), layer);
+      //      filesystemwriter.write(tree, buildPath, layer);
+      mbtileswriter.writeAll(tree, buildPath, layer);
 
       fs.writeFileSync(
         path.join(basePath, layer.name + "_stats.json"),

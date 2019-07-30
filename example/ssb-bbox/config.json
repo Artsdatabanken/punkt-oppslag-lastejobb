@@ -8,6 +8,7 @@
   "buildPath": "./build",
   "layers": {
     "telemark": {
+      "url": "https://data.artsdatabanken.no/Fylke/Telemark",
       "source": "../telemark.tif",
       "zoom": 8,
       "nullverdi": [0],
