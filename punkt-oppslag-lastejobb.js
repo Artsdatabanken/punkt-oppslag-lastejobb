@@ -16,12 +16,24 @@ if (process.argv.length !== 4)
     "Usage: node punkt-oppslag-lastejobb <dataDirectory> <datasetName>"
   );
 const basePath = process.argv[2];
-const tree = readConfig(basePath);
 const layerName = process.argv[3];
-const layer = tree.layers[layerName];
-if (!layer) return log.warn(`Dataset ${layerName} not present in ${basePath}`);
-layer.name = layerName;
-processDataset(layer);
+processLayers(layerName, basePath);
+
+function processLayers(layerName, basePath) {
+  if (layerName === "*") {
+    const tree = readConfig(basePath);
+    Object.keys(tree.layers).forEach(name => processLayer(name, basePath));
+  } else processLayer(layerName, basePath);
+}
+
+function processLayer(layerName, basePath) {
+  const tree = readConfig(basePath);
+  const layer = tree.layers[layerName];
+  if (!layer)
+    return log.warn(`Dataset ${layerName} not present in ${basePath}`);
+  layer.name = layerName;
+  processDataset(layer, tree);
+}
 
 function readConfig(basePath) {
   const tree = lastejobb.io.readJson(path.join(basePath, "config.json"));
@@ -31,7 +43,7 @@ function readConfig(basePath) {
   return tree;
 }
 
-function processDataset(layer) {
+function processDataset(layer, tree) {
   layer.mapFile = path.join(basePath, layer.source);
   const intervall = layer.intervall;
   intervall.original.bredde = intervall.original[1] - intervall.original[0];

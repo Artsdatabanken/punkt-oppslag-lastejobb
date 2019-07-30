@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Launch Program",
       "program": "${workspaceFolder}/punkt-oppslag-lastejobb.js",
-      "args": ["example/ssb-bbox", "telemark"]
+      "args": ["example/ssb-bbox", "*"]
     },
     {
       "type": "node",
