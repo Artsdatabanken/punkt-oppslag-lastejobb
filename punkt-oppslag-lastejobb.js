@@ -54,8 +54,8 @@ function processDataset(layer) {
       log.info("Pruning...");
       const pruneCount = quadtree.compact.pruneChildren(tree);
       log.info("Pruned " + pruneCount + " tiles.");
-      log.info("Quantizing");
-      quadtree.compact.quantizeValues(tree);
+      //log.info("Quantizing");
+      //      quadtree.compact.quantizeValues(tree);
       log.info("Generating summary");
       const stats = quadtree.statistics.summarize(tree);
       log.info("Cleanup");
