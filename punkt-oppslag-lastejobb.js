@@ -44,6 +44,7 @@ function readConfig(basePath) {
 }
 
 function processDataset(layer, tree) {
+  log.info("Processing " + layer.name + "...");
   layer.mapFile = path.join(basePath, layer.source);
   const intervall = layer.intervall;
   intervall.original.bredde = intervall.original[1] - intervall.original[0];
