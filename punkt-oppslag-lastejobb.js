@@ -56,7 +56,7 @@ function processDataset(layer, tree) {
       " meters"
   );
   log.info("Reading:           " + layer.source);
-  processTiff(layer)
+  processTiff(layer, tree)
     .then(x => {
       //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
       log.info("Building pyramid...");
@@ -89,7 +89,7 @@ function processDataset(layer, tree) {
     });
 }
 
-async function processTiff(meta) {
+async function processTiff(meta, tree) {
   const gt = await GeoTIFF.fromFile(meta.mapFile);
   const imageCount = await gt.getImageCount();
   if (imageCount !== 1)
@@ -102,7 +102,7 @@ async function processTiff(meta) {
   if (rasters.length !== 1)
     throw new Error("Can only handle GeoTiff containing single raster.");
   log.info("Indexing " + width + "x" + height + " raster");
-  index(rasters[0], bbox, width, height, meta);
+  index(rasters[0], tree, bbox, width, height, meta);
 }
 
 function erNullverdi(value, nullverdier) {
@@ -113,7 +113,7 @@ function erNullverdi(value, nullverdier) {
   return false;
 }
 
-function index(raster, bbox, width, height, meta) {
+function index(raster, tree, bbox, width, height, meta) {
   for (var y = 0; y < height; y++)
     for (var x = 0; x < width; x++) {
       const offset = y * width + x;
