@@ -124,9 +124,9 @@ async function writeAll(node, directory, config) {
   const source = await openPrevious(directory);
   const target = source;
   //  const target = await createTargetDatabase(directory);
-  log.info("Writing new tiles...");
+  log.info("Writing tiles...");
   await write(node, source, target, config, "");
-  log.info("Copy old tiles...");
+  //  log.info("Copy old tiles...");
   //  await copyFromSource(source, target, node);
   //  createIndex(target);
   //  if (source) source.close();
