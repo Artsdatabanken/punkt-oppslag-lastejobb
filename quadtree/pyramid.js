@@ -14,9 +14,9 @@ function build(tree, config) {
   const acc = items.reduce(
     (acc, e) => {
       if (config.mode === "class") {
-        if (e.p > acc.p) {
-          acc.p = e.p;
-          acc.v = e.v;
+        if (e.p > tree.p) {
+          tree.p = e.p;
+          tree.v = e.v;
         }
       } else {
         acc.sum += e.v;
