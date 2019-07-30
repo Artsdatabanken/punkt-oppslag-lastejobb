@@ -6,10 +6,6 @@ function addVariance(tree, path) {
   addVariance(tree.sw, subPath);
   addVariance(tree.se, subPath);
 
-  if (!(tree.v >= 0)) {
-    debugger;
-    throw new Error();
-  }
   subPath.forEach(node => {
     node.var = node.var || 0;
     node.n = (node.n || 0) + 1;
