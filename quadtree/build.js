@@ -6,12 +6,12 @@ const quadBound = {
   se: { x: [0.5, 1], y: [0.5, 1] }
 };
 
-function addChild(tree, dir, bounds, z, value) {
+function addChild(tree, dir, bounds, z, value, config) {
   bounds = clip(bounds, quadBound[dir]);
   if (!hasArea(bounds, z)) return;
   if (!tree[dir]) tree[dir] = {};
   bounds = normalizeToNextZoom(bounds, quadBound[dir]);
-  add(tree[dir], bounds, z - 1, value);
+  add(tree[dir], bounds, z - 1, value, config);
 }
 
 function normalizeToNextZoom(aarect, bounds) {
