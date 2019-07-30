@@ -20,7 +20,7 @@ const layerName = process.argv[3];
 processLayers(layerName, basePath);
 
 function processLayers(layerName, basePath) {
-  if (layerName === "*") {
+  if (layerName === "all") {
     const tree = readConfig(basePath);
     Object.keys(tree.layers).forEach(name => processLayer(name, basePath));
   } else processLayer(layerName, basePath);
