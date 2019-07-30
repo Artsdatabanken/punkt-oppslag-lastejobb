@@ -33,7 +33,7 @@ function processLayer(layerName, basePath) {
   if (!layer)
     return log.warn(`Dataset ${layerName} not present in ${basePath}`);
   layer.name = layerName;
-  processDataset(layer, tree);
+  await processDataset(layer, tree);
 }
 
 function readConfig(basePath) {
