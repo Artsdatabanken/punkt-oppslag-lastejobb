@@ -65,6 +65,7 @@ function removeP(tree) {
   removeP(tree.sw);
   removeP(tree.se);
   delete tree.p;
+  if (tree.var === 0) delete tree.var;
 }
 
 module.exports = { pruneChildren, quantizeValues, removeP };
