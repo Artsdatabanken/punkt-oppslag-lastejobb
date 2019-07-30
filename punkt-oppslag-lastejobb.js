@@ -20,14 +20,14 @@ const basePath = process.argv[2];
 const layerName = process.argv[3];
 processLayers(layerName, basePath);
 
-function processLayers(layerName, basePath) {
+async function processLayers(layerName, basePath) {
   if (layerName === "all") {
     const tree = readConfig(basePath);
-    Object.keys(tree.layers).forEach(name => processLayer(name, basePath));
-  } else processLayer(layerName, basePath);
+    Object.keys(tree.layers).forEach(name => await processLayer(name, basePath));
+  } else await processLayer(layerName, basePath);
 }
 
-function processLayer(layerName, basePath) {
+async function processLayer(layerName, basePath) {
   const tree = readConfig(basePath);
   const layer = tree.layers[layerName];
   if (!layer)
