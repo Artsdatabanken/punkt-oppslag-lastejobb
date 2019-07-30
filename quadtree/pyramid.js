@@ -1,9 +1,9 @@
-function build(tree) {
+function build(tree, config) {
   if (!tree) return;
-  build(tree.nw);
-  build(tree.ne);
-  build(tree.sw);
-  build(tree.se);
+  build(tree.nw, config);
+  build(tree.ne, config);
+  build(tree.sw, config);
+  build(tree.se, config);
 
   const items = [];
   if (tree.nw) items.push(tree.nw);
@@ -13,10 +13,17 @@ function build(tree) {
   if (items.length <= 0) return;
   const acc = items.reduce(
     (acc, e) => {
-      acc.sum += e.v;
-      acc.p += e.p;
-      tree.min = tree.min === undefined ? e.min : Math.min(tree.min, e.min);
-      tree.max = tree.max === undefined ? e.max : Math.max(tree.max, e.max);
+      if (config.mode === "class") {
+        if (e.p > acc.p) {
+          acc.p = e.p;
+          acc.v = e.v;
+        }
+      } else {
+        acc.sum += e.v;
+        acc.p += e.p;
+        tree.min = tree.min === undefined ? e.min : Math.min(tree.min, e.min);
+        tree.max = tree.max === undefined ? e.max : Math.max(tree.max, e.max);
+      }
       return acc;
     },
     { sum: 0, p: 0 }
