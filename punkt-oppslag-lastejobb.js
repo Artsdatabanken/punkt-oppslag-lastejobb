@@ -23,7 +23,8 @@ processLayers(layerName, basePath);
 async function processLayers(layerName, basePath) {
   if (layerName === "all") {
     const tree = readConfig(basePath);
-    Object.keys(tree.layers).forEach(name => await processLayer(name, basePath));
+    const tasks = Object.keys(tree.layers);
+    for (var task in tasks) await processLayer(task.name, basePath);
   } else await processLayer(layerName, basePath);
 }
 
