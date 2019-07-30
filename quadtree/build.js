@@ -39,7 +39,7 @@ function hasArea(aabb, z) {
   return true;
 }
 
-function add(tree, bounds, z, value) {
+function add(tree, bounds, z, value, config) {
   bounds = clip(bounds, quadBound.parent);
   if (!hasArea(bounds, z)) return;
   const stop =
@@ -50,17 +50,24 @@ function add(tree, bounds, z, value) {
     tree.min = tree.min === undefined ? value : Math.min(value, tree.min);
     tree.max = tree.max === undefined ? value : Math.max(value, tree.max);
 
-    // For linear gradient maps:
-    tree.v = (tree.v || 0) + value * p;
-
-    tree.p = (tree.p || 0) + p;
+    if (config.mode === "class") {
+      // For class based maps:
+      if (p > tree.p) {
+        tree.p = p;
+        tree.v = value;
+      }
+    } else {
+      // For linear gradient maps:
+      tree.v = (tree.v || 0) + value * p;
+      tree.p = (tree.p || 0) + p;
+    }
     return;
   }
 
-  addChild(tree, "nw", bounds, z, value);
-  addChild(tree, "ne", bounds, z, value);
-  addChild(tree, "sw", bounds, z, value);
-  addChild(tree, "se", bounds, z, value);
+  addChild(tree, "nw", bounds, z, value, config);
+  addChild(tree, "ne", bounds, z, value, config);
+  addChild(tree, "sw", bounds, z, value, config);
+  addChild(tree, "se", bounds, z, value, config);
 }
 
 module.exports = { add };
