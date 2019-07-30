@@ -6,12 +6,13 @@ const quadBound = {
   se: { x: [0.5, 1], y: [0.5, 1] }
 };
 
-function addChild(tree, dir, bounds, z, value, config) {
+function addChild(tree, dir, bounds, meta, value) {
+  const z = meta.zoom;
   bounds = clip(bounds, quadBound[dir]);
   if (!hasArea(bounds, z)) return;
   if (!tree[dir]) tree[dir] = {};
   bounds = normalizeToNextZoom(bounds, quadBound[dir]);
-  add(tree[dir], bounds, z - 1, value, config);
+  add(tree[dir], bounds, { mode: meta.mode, zoom: z - 1 }, value);
 }
 
 function normalizeToNextZoom(aarect, bounds) {
@@ -39,7 +40,8 @@ function hasArea(aabb, z) {
   return true;
 }
 
-function add(tree, bounds, z, value, config) {
+function add(tree, bounds, meta, value) {
+  const z = meta.zoom;
   bounds = clip(bounds, quadBound.parent);
   if (!hasArea(bounds, z)) return;
   const stop =
@@ -50,9 +52,10 @@ function add(tree, bounds, z, value, config) {
     tree.min = tree.min === undefined ? value : Math.min(value, tree.min);
     tree.max = tree.max === undefined ? value : Math.max(value, tree.max);
 
-    if (config.mode === "class") {
+    if (meta.mode === "class") {
       // For class based maps:
-      if (p > tree.p) {
+      if (p > (tree.p || 0)) {
+        // TODO: Can't do this because multiple pixels having same v
         tree.p = p;
         tree.v = value;
       }
@@ -64,10 +67,10 @@ function add(tree, bounds, z, value, config) {
     return;
   }
 
-  addChild(tree, "nw", bounds, z, value, config);
-  addChild(tree, "ne", bounds, z, value, config);
-  addChild(tree, "sw", bounds, z, value, config);
-  addChild(tree, "se", bounds, z, value, config);
+  addChild(tree, "nw", bounds, meta, value);
+  addChild(tree, "ne", bounds, meta, value);
+  addChild(tree, "sw", bounds, meta, value);
+  addChild(tree, "se", bounds, meta, value);
 }
 
 module.exports = { add };

@@ -7,9 +7,16 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Launch test telemark",
       "program": "${workspaceFolder}/punkt-oppslag-lastejobb.js",
       "args": ["example/ssb-bbox", "all"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Live config",
+      "program": "${workspaceFolder}/punkt-oppslag-lastejobb.js",
+      "args": ["data", "kommune"]
     },
     {
       "type": "node",
