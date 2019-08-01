@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-const fetch = require("node-fetch");
 const lastejobb = require("lastejobb");
 const { log } = require("lastejobb");
 const GeoTIFF = require("geotiff");
@@ -45,19 +44,9 @@ function readConfig(basePath) {
   return tree;
 }
 
-async function downloadMeta(layer, basePath) {
-  const dir = path.join(basePath, "meta");
-  lastejobb.io.mkdir(dir);
-  const destPath = path.join(dir, layer.name + ".json");
-  fetch(layer.url + "/metadata.json")
-    .then(r => r.json())
-    .then(json => fs.writeFileSync(destPath, JSON.stringify(json)));
-}
-
 async function processDataset(layer, tree) {
   log.info("Processing " + layer.name + "...");
   const buildPath = path.join(basePath, tree.buildPath);
-  downloadMeta(layer, buildPath);
   layer.mapFile = path.join(basePath, layer.source);
   const intervall = layer.intervall;
   intervall.original.bredde = intervall.original[1] - intervall.original[0];
