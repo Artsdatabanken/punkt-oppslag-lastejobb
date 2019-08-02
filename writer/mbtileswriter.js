@@ -2,6 +2,7 @@ const { log } = require("lastejobb");
 const { each, writeExec, readdb, writedb } = require("./sqlite");
 const fs = require("fs");
 const sqlite3 = require("sqlite3");
+const lastejobb = require("lastejobb");
 const path = require("path");
 
 async function readTile(db, key) {
@@ -36,7 +37,8 @@ async function updateTile(node, sourceDb, targetDb, config, key) {
     //    n: node.n
   };
 
-  const json = JSON.stringify(o);
+  let json = JSON.stringify(o);
+  json = lastejobb.json.sortKeys(json);
   if (json !== tile) await writeTile(targetDb, key, json, exists);
 }
 
