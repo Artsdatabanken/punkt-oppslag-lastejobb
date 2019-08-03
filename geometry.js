@@ -1,3 +1,12 @@
+function clipToBounds(aarect, bounds) {
+  return [
+    Math.min(bounds.x[1], Math.max(bounds.x[0], aarect[0])),
+    Math.min(bounds.y[1], Math.max(bounds.y[0], aarect[1])),
+    Math.min(bounds.x[1], Math.max(bounds.x[0], aarect[2])),
+    Math.min(bounds.y[1], Math.max(bounds.y[0], aarect[3]))
+  ];
+}
+
 function normalize(coord, bounds) {
   return [
     (coord[0] - bounds.left) / bounds.width,
@@ -29,4 +38,4 @@ function getExtents(data) {
   return bounds;
 }
 
-module.exports = { getExtents, normalize };
+module.exports = { clipToBounds, getExtents, normalize };

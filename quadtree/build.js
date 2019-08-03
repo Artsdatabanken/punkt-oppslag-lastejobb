@@ -1,3 +1,5 @@
+const geometry = require("../geometry");
+
 const quadBound = {
   parent: { x: [0, 1], y: [0, 1] },
   nw: { x: [0, 0.5], y: [0, 0.5] },
@@ -8,28 +10,19 @@ const quadBound = {
 
 function addChild(tree, dir, bounds, meta, value) {
   const z = meta.zoom;
-  bounds = clip(bounds, quadBound[dir]);
+  bounds = geometry.clipToBounds(bounds, quadBound[dir]);
   if (!hasArea(bounds, z)) return;
   if (!tree[dir]) tree[dir] = {};
-  bounds = normalizeToNextZoom(bounds, quadBound[dir]);
+  bounds = calculateForZoomPlus1(bounds, quadBound[dir]);
   add(tree[dir], bounds, { mode: meta.mode, zoom: z - 1 }, value);
 }
 
-function normalizeToNextZoom(aarect, bounds) {
+function calculateForZoomPlus1(aarect, bounds) {
   return [
     2 * (aarect[0] - bounds.x[0]),
     2 * (aarect[1] - bounds.y[0]),
     2 * (aarect[2] - bounds.x[0]),
     2 * (aarect[3] - bounds.y[0])
-  ];
-}
-
-function clip(aarect, bounds) {
-  return [
-    Math.min(bounds.x[1], Math.max(bounds.x[0], aarect[0])),
-    Math.min(bounds.y[1], Math.max(bounds.y[0], aarect[1])),
-    Math.min(bounds.x[1], Math.max(bounds.x[0], aarect[2])),
-    Math.min(bounds.y[1], Math.max(bounds.y[0], aarect[3]))
   ];
 }
 
@@ -42,7 +35,7 @@ function hasArea(aabb, z) {
 
 function add(tree, bounds, meta, value) {
   const z = meta.zoom;
-  bounds = clip(bounds, quadBound.parent);
+  bounds = geometry.clipToBounds(bounds, quadBound.parent);
   if (!hasArea(bounds, z)) return;
   const stop =
     z === 0 ||
@@ -59,6 +52,8 @@ function add(tree, bounds, meta, value) {
         tree.p = p;
         tree.v = value;
       }
+    } else if (meta.mode === "coords") {
+      tree.p = value;
     } else {
       // For linear gradient maps:
       tree.v = (tree.v || 0) + value * p;
