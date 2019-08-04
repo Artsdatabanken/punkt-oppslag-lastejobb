@@ -5,7 +5,7 @@ const GeoTIFF = require("geotiff");
 const quadtree = require("./quadtree");
 const geometry = require("./geometry");
 const filesystemwriter = require("./writer/filesystemwriter");
-const mbtileswriter = require("./writer/mbtileswriter");
+const Mbtileswriter = require("./writer/mbtileswriter");
 const fs = require("fs");
 const path = require("path");
 const pkg = require("./package");
@@ -78,7 +78,8 @@ async function processDataset(layer, tree) {
   //      log.info(quadtree.find(tree, coords[0], coords[1], 42));
   log.info("Writing tiles...");
   //      filesystemwriter.write(tree, buildPath, layer);
-  await mbtileswriter.writeAll(tree, buildPath, layer);
+  const mbtileswriter = new Mbtileswriter();
+  mbtileswriter.writeAll(tree, buildPath, layer);
 
   fs.writeFileSync(
     path.join(basePath, layer.name + "_stats.json"),
