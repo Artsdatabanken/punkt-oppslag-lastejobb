@@ -5,10 +5,21 @@ const lastejobb = require("lastejobb");
 const path = require("path");
 
 class MbtilesWriter {
-  readTile(db, key) {
-    const stmt = db.prepare("SELECT tile_data FROM tiles WHERE key=?");
-    const r = stmt.get(key);
-    return r;
+  statement = {};
+
+  constructor(directory) {
+    debugger;
+    const db = this.openDatabase(directory);
+    this.statement = {
+      selectTile: db.prepare("SELECT tile_data FROM tiles WHERE key=?"),
+      updateTile: db.prepare("UPDATE tiles SET tile_data=? WHERE KEY=?;"),
+      insertTile: db.prepare("INSERT INTO tiles VALUES (?,?);")
+    };
+    this.source = db;
+  }
+
+  readTile(key) {
+    return this.statement.selectTile.get(key);
   }
 
   writeExec(db, sql, args) {
@@ -16,18 +27,13 @@ class MbtilesWriter {
     stmt.run(...args);
   }
 
-  writeTile(db, key, buffer, exists) {
-    if (exists) {
-      const stmt = db.prepare("UPDATE tiles SET tile_data=? WHERE KEY=?;");
-      stmt.run(buffer, key);
-    } else {
-      const stmt = db.prepare("INSERT INTO tiles VALUES (?,?);");
-      stmt.run(key, buffer);
-    }
+  writeTile(key, buffer, exists) {
+    if (exists) this.statement.updateTile.run(buffer, key);
+    else this.statement.insertTile.run(key, buffer);
   }
 
-  updateTile(node, sourceDb, targetDb, config, key) {
-    const tile = sourceDb && this.readTile(sourceDb, key);
+  updateTile(node, config, key) {
+    const tile = this.readTile(key);
     const exists = !!tile;
     const o = tile ? JSON.parse(tile.tile_data) : {};
 
@@ -41,7 +47,7 @@ class MbtilesWriter {
 
     let json = JSON.stringify(o);
     json = lastejobb.json.sortKeys(json);
-    if (json !== tile) this.writeTile(targetDb, key, json, exists);
+    if (json !== tile) this.writeTile(key, json, exists);
   }
 
   createMbtile(file, metadata) {
@@ -66,38 +72,29 @@ class MbtilesWriter {
 
   directionToKey = { nw: 0, ne: 1, sw: 2, se: 3 };
 
-  writeChild(tree, sourceDb, targetDb, config, key, direction) {
+  writeChild(tree, sourceDb, config, key, direction) {
     const node = tree[direction];
-    this.write(
-      node,
-      sourceDb,
-      targetDb,
-      config,
-      key + this.directionToKey[direction]
-    );
+    this.write(node, sourceDb, config, key + this.directionToKey[direction]);
   }
 
-  write(node, sourceDb, targetDb, config, key) {
+  write(node, config, key) {
     if (!node) return;
-    this.updateTile(node, sourceDb, targetDb, config, key);
-    this.writeChild(node, sourceDb, targetDb, config, key, "nw");
-    this.writeChild(node, sourceDb, targetDb, config, key, "ne");
-    this.writeChild(node, sourceDb, targetDb, config, key, "sw");
-    this.writeChild(node, sourceDb, targetDb, config, key, "se");
+    this.updateTile(node, config, key);
+    this.writeChild(node, config, key, "nw");
+    this.writeChild(node, config, key, "ne");
+    this.writeChild(node, config, key, "sw");
+    this.writeChild(node, config, key, "se");
   }
 
   openDatabase(directory) {
     const sqlitePath = path.join(directory, "index.sqlite");
     log.info("Merging with tiles from " + sqlitePath);
-    if (!fs.existsSync(sqlitePath)) return null;
     return new sqlite3(sqlitePath);
   }
 
-  writeAll(node, directory, config) {
-    const source = this.openDatabase(directory);
-    const target = source;
+  writeAll(node, config) {
     log.info("Writing tiles...");
-    this.write(node, source, target, config, "");
+    this.write(node, config, "");
   }
 }
 
