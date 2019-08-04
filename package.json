@@ -1,6 +1,6 @@
 {
   "name": "punkt-oppslag-lastejobb",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "",
   "bin": "./punkt-oppslag-lastejobb.js",
   "main": "index.js",
@@ -12,10 +12,10 @@
   "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.26.0",
+    "better-sqlite3": "^5.4.0",
     "geotiff": "^1.0.0-beta.6",
     "jest": "^24.8.0",
     "lastejobb": "^1.23.2",
-    "polygon-lookup": "^2.5.0",
-    "sqlite3": "^4.0.9"
+    "polygon-lookup": "^2.5.0"
   }
 }

@@ -29,9 +29,7 @@ function build(tree, config) {
     { sum: 0, p: 0 }
   );
   if (config.mode !== "class") {
-    if (!tree.v) {
-      tree.v = ~~(0.25 * acc.sum);
-    }
+    if (!tree.v) tree.v = 0.25 * acc.sum;
     tree.p = (tree.p || 0) + 0.25 * acc.p;
   }
 }
