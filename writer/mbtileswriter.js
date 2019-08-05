@@ -15,7 +15,7 @@ class MbtilesWriter {
       updateTile: db.prepare("UPDATE tiles SET tile_data=? WHERE KEY=?;"),
       insertTile: db.prepare("INSERT INTO tiles VALUES (?,?);")
     };
-    this.source = db;
+    this.db = db;
   }
 
   readTile(key) {
@@ -87,7 +87,10 @@ class MbtilesWriter {
 
   writeAll(node, config) {
     log.info("Writing tiles...");
-    this.write(node, config, "");
+    const insertMany = this.db.transaction(() => {
+      this.write(node, config, "");
+    });
+    console.log("insertMany", insertMany);
   }
 }
 
