@@ -22,11 +22,6 @@ class MbtilesWriter {
     return this.statement.selectTile.get(key);
   }
 
-  writeExec(db, sql, args) {
-    const stmt = db.prepare(sql);
-    stmt.run(...args);
-  }
-
   writeTile(key, buffer, exists) {
     if (exists) this.statement.updateTile.run(buffer, key);
     else this.statement.insertTile.run(key, buffer);
@@ -54,8 +49,8 @@ class MbtilesWriter {
     if (fs.existsSync(file)) fs.unlinkSync(file);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     const db = sqlite3(file);
-    this.writeExec(db, "CREATE TABLE metadata (name text, value text);");
-    this.writeExec(db, "CREATE TABLE tiles (key text, tile_data blob);");
+    db.exec("CREATE TABLE metadata (name text, value text);");
+    db.exec("CREATE TABLE tiles (key text, tile_data blob);");
 
     Object.keys(metadata).forEach(key => {
       const value = metadata[key];
@@ -67,7 +62,7 @@ class MbtilesWriter {
   }
 
   createIndex(db) {
-    this.writeExec(db, "CREATE UNIQUE INDEX tile_index on tiles (key);");
+    db.exec("CREATE UNIQUE INDEX tile_index on tiles (key);");
   }
 
   directionToKey = { nw: 0, ne: 1, sw: 2, se: 3 };
@@ -89,6 +84,7 @@ class MbtilesWriter {
   openDatabase(directory) {
     const sqlitePath = path.join(directory, "index.sqlite");
     log.info("Merging with tiles from " + sqlitePath);
+    if (!fs.existsSync(sqlitePath)) return this.createMbtile(sqlitePath, {});
     return new sqlite3(sqlitePath);
   }
 
