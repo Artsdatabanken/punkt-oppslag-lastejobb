@@ -87,10 +87,9 @@ class MbtilesWriter {
 
   writeAll(node, config) {
     log.info("Writing tiles...");
-    const insertMany = this.db.transaction(() => {
-      this.write(node, config, "");
-    });
-    console.log("insertMany", insertMany);
+    this.db.exec("BEGIN");
+    this.write(node, config, "");
+    this.db.exec("COMMIT");
   }
 }
 
