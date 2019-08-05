@@ -51,6 +51,7 @@ class MbtilesWriter {
     const db = sqlite3(file);
     db.exec("CREATE TABLE metadata (name text, value text);");
     db.exec("CREATE TABLE tiles (key text, tile_data blob);");
+    db.exec("CREATE UNIQUE INDEX tile_index on tiles (key);");
 
     Object.keys(metadata).forEach(key => {
       const value = metadata[key];
@@ -59,10 +60,6 @@ class MbtilesWriter {
     });
 
     return db;
-  }
-
-  createIndex(db) {
-    db.exec("CREATE UNIQUE INDEX tile_index on tiles (key);");
   }
 
   directionToKey = { nw: 0, ne: 1, sw: 2, se: 3 };
