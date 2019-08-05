@@ -67,9 +67,9 @@ class MbtilesWriter {
 
   directionToKey = { nw: 0, ne: 1, sw: 2, se: 3 };
 
-  writeChild(tree, sourceDb, config, key, direction) {
+  writeChild(tree, config, key, direction) {
     const node = tree[direction];
-    this.write(node, sourceDb, config, key + this.directionToKey[direction]);
+    this.write(node, config, key + this.directionToKey[direction]);
   }
 
   write(node, config, key) {
