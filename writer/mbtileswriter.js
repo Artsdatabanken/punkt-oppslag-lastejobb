@@ -87,9 +87,12 @@ class MbtilesWriter {
 
   writeAll(node, config) {
     log.info("Writing tiles...");
+    this.db.exec("PRAGMA synchronous = OFF");
     this.db.exec("BEGIN");
+    // this.db.exec("PRAGMA journal_mode = MEMORY")
     this.write(node, config, "");
     this.db.exec("COMMIT");
+    log.info("Done.");
   }
 }
 
