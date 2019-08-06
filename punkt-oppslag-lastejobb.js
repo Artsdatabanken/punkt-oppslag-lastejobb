@@ -63,9 +63,9 @@ async function processDataset(layer, tree) {
   // .then(x => {
   //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
   log.info("Building pyramid...");
-  quadtree.addPyramid(tree, layer);
-  log.info("Calculating variance...");
-  quadtree.statistics.variance.add(tree);
+  //  quadtree.addPyramid(tree, layer);
+  //  log.info("Calculating variance...");
+  //  quadtree.statistics.variance.add(tree);
   log.info("Pruning...");
   const pruneCount = quadtree.compact.pruneChildren(tree);
   log.info("Pruned " + pruneCount + " tiles.");

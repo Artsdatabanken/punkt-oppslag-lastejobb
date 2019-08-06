@@ -34,12 +34,16 @@ function hasArea(aabb, z) {
 }
 
 function add(tree, bounds, meta, value) {
+  const epsilon = 1e-6;
   const z = meta.zoom;
   bounds = geometry.clipToBounds(bounds, quadBound.parent);
   if (!hasArea(bounds, z)) return;
   const stop =
     z === 0 ||
-    (bounds[0] === 0 && bounds[1] === 0 && bounds[2] === 1 && bounds[3] === 1);
+    (bounds[0] < epsilon &&
+      bounds[1] < epsilon &&
+      bounds[2] > 1 - epsilon &&
+      bounds[3] > 1 - epsilon);
   if (stop) {
     const p = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
     tree.min = tree.min === undefined ? value : Math.min(value, tree.min);
