@@ -28,9 +28,14 @@ function calculateForZoomPlus1(aarect, bounds) {
 
 function hasArea(aabb, z) {
   const epsilon = 1e-4 * Math.pow(0.5, z);
-  if (aabb[0] >= aabb[2] - epsilon) return false;
-  if (aabb[1] >= aabb[3] - epsilon) return false;
-  return true;
+  const area = calcArea(aabb);
+  return area > 0;
+}
+
+function calcArea(aabb) {
+  let area = (aabb[2] - aabb[0]) * (aabb[3] - aabb[1]);
+  //  if (area < epsilon) area = 0;
+  return area;
 }
 
 function add(tree, bounds, meta, value) {
