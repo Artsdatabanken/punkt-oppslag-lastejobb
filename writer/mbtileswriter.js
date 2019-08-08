@@ -8,7 +8,6 @@ class MbtilesWriter {
   statement = {};
 
   constructor(directory) {
-    debugger;
     const db = this.openDatabase(directory);
     this.statement = {
       selectTile: db.prepare("SELECT tile_data FROM tiles WHERE key=?"),
