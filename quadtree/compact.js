@@ -1,11 +1,11 @@
-function pullFromChild(child, value) {
+function canPullFromChild(child, value) {
   if (!child.v) return false;
   if (!child.p) return false;
   if (value && value != child.v) return false;
   return true;
 }
 
-function pruneChildren(tree, options = { compactAnyP: true }) {
+function pruneChildren(tree, options = { compactAnyP: false }) {
   let count = 0;
   if (!tree) return count;
   count += pruneChildren(tree.nw);
@@ -26,15 +26,15 @@ function pruneChildren(tree, options = { compactAnyP: true }) {
   }
 
   let value = 0;
-  if (!pullFromChild(tree.nw, value)) return count;
+  if (!canPullFromChild(tree.nw, value)) return count;
   value = tree.nw.v;
-  if (!pullFromChild(tree.ne, value)) return count;
+  if (!canPullFromChild(tree.ne, value)) return count;
   value = tree.ne.v;
-  if (!pullFromChild(tree.sw, value)) return count;
+  if (!canPullFromChild(tree.sw, value)) return count;
   value = tree.sw.v;
-  if (!pullFromChild(tree.se, value)) return count;
+  if (!canPullFromChild(tree.se, value)) return count;
   value = tree.se.v;
-
+  debugger;
   // All quads have the same value, remove and set the value on parent
   tree.v = value;
   tree.p = 0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p);

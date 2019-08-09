@@ -1,6 +1,6 @@
 {
   "name": "punkt-oppslag-lastejobb",
-  "version": "1.10.4",
+  "version": "1.11.4",
   "description": "",
   "bin": "./punkt-oppslag-lastejobb.js",
   "main": "index.js",

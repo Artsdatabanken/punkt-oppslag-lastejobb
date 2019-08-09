@@ -62,17 +62,22 @@ async function processDataset(layer, tree) {
   await processTiff(layer, tree);
   // .then(x => {
   //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
-  log.info("Building pyramid...");
-  //  quadtree.addPyramid(tree, layer);
-  //  log.info("Calculating variance...");
-  //  quadtree.statistics.variance.add(tree);
+  if (layer.buildPyramid) {
+    quadtree.addPyramid(tree, layer);
+    log.info("Building pyramid...");
+  }
+  if (layer.buildVariance) {
+    log.info("Calculating variance...");
+    quadtree.statistics.variance.add(tree);
+  }
   log.info("Pruning...");
-  const pruneCount = quadtree.compact.pruneChildren(tree);
+  const pruneCount = quadtree.compact.pruneChildren(tree, layer);
   log.info("Pruned " + pruneCount + " tiles.");
   //log.info("Quantizing");
   //      quadtree.compact.quantizeValues(tree);
   log.info("Generating summary");
   const stats = quadtree.statistics.summarize(tree);
+  stats.quadCount = layer.quadCount;
   log.info("Cleanup");
   quadtree.compact.removeP(tree);
   //      log.info(quadtree.find(tree, coords[0], coords[1], 42));
@@ -93,8 +98,8 @@ async function processDataset(layer, tree) {
   //  });
 }
 
-async function processTiff(meta, tree) {
-  const gt = await GeoTIFF.fromFile(meta.mapFile);
+async function processTiff(layer, tree) {
+  const gt = await GeoTIFF.fromFile(layer.mapFile);
   const imageCount = await gt.getImageCount();
   if (imageCount !== 1)
     throw new Error("Can only handle GeoTiff containing single image.");
@@ -106,7 +111,7 @@ async function processTiff(meta, tree) {
   if (rasters.length !== 1)
     throw new Error("Can only handle GeoTiff containing single raster.");
   log.info("Indexing " + width + "x" + height + " raster");
-  index(rasters[0], tree, bbox, width, height, meta);
+  index(rasters[0], tree, bbox, width, height, layer);
 }
 
 function erNullverdi(value, nullverdier) {
@@ -117,18 +122,19 @@ function erNullverdi(value, nullverdier) {
   return false;
 }
 
-function index(raster, tree, bbox, width, height, meta) {
+function index(raster, tree, bbox, width, height, layer) {
   for (var y = 0; y < height; y++)
     for (var x = 0; x < width; x++) {
       const offset = y * width + x;
       const value = raster[offset];
-      if (erNullverdi(value, meta.nullverdi)) continue;
-      const qvalue = quantize(meta.intervall, value);
-      if (Math.round(qvalue) > meta.intervall.normalisertVerdi[1])
+      if (erNullverdi(value, layer.nullverdi)) continue;
+      const qvalue = quantize(layer.intervall, value);
+      if (Math.round(qvalue) > layer.intervall.normalisertVerdi[1])
         throw new Error("Value out of range.  In:" + value + " Out:" + qvalue);
       const coords = getPixelCoords(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
-      quadtree.add(tree, xy, meta, value);
+      const cursor = { bounds: xy, zoom: 0, targetZoom: layer.zoom };
+      quadtree.add(tree, cursor, layer, value);
     }
 }
 

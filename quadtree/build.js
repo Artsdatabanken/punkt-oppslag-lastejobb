@@ -8,28 +8,26 @@ const quadBound = {
   se: { x: [0.5, 1], y: [0.5, 1] }
 };
 
-function addChild(tree, dir, bounds, meta, value) {
-  const z = meta.zoom;
-  bounds = geometry.clipToBounds(bounds, quadBound[dir]);
-  if (!hasArea(bounds, z)) return;
-  if (!tree[dir]) tree[dir] = {};
-  bounds = calculateForZoomPlus1(bounds, quadBound[dir]);
-  add(tree[dir], bounds, { mode: meta.mode, zoom: z - 1 }, value);
-}
-
-function calculateForZoomPlus1(aarect, bounds) {
-  return [
-    2 * (aarect[0] - bounds.x[0]),
-    2 * (aarect[1] - bounds.y[0]),
-    2 * (aarect[2] - bounds.x[0]),
-    2 * (aarect[3] - bounds.y[0])
+function addChild(tree, dir, parentCursor, meta, value) {
+  let bounds = geometry.clipToBounds(parentCursor.bounds, quadBound[dir]);
+  const area = calcArea(parentCursor.bounds);
+  if (area <= 0) return;
+  const xbounds = quadBound[dir];
+  bounds = [
+    2 * (bounds[0] - xbounds.x[0]),
+    2 * (bounds[1] - xbounds.y[0]),
+    2 * (bounds[2] - xbounds.x[0]),
+    2 * (bounds[3] - xbounds.y[0])
   ];
-}
+  const cursor = {
+    bounds: bounds,
+    area,
+    zoom: parentCursor.zoom + 1,
+    targetZoom: parentCursor.targetZoom
+  };
+  if (!tree[dir]) tree[dir] = {};
 
-function hasArea(aabb, z) {
-  const epsilon = 1e-4 * Math.pow(0.5, z);
-  const area = calcArea(aabb);
-  return area > 0;
+  add(tree[dir], cursor, meta, value);
 }
 
 function calcArea(aabb) {
@@ -38,27 +36,22 @@ function calcArea(aabb) {
   return area;
 }
 
-function add(tree, bounds, meta, value) {
+function add(tree, cursor, meta, value) {
   const epsilon = 1e-6;
-  const z = meta.zoom;
-  bounds = geometry.clipToBounds(bounds, quadBound.parent);
-  if (!hasArea(bounds, z)) return;
-  const stop =
-    z === 0 ||
-    (bounds[0] < epsilon &&
-      bounds[1] < epsilon &&
-      bounds[2] > 1 - epsilon &&
-      bounds[3] > 1 - epsilon);
+  cursor.bounds = geometry.clipToBounds(cursor.bounds, quadBound.parent);
+  const area = calcArea(cursor.bounds);
+  if (area <= 0) return;
+  const stop = cursor.zoom === cursor.targetZoom;
   if (stop) {
-    const p = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0]);
-    tree.min = tree.min === undefined ? value : Math.min(value, tree.min);
-    tree.max = tree.max === undefined ? value : Math.max(value, tree.max);
-
+    if (meta.addMinMax) {
+      tree.min = tree.min === undefined ? value : Math.min(value, tree.min);
+      tree.max = tree.max === undefined ? value : Math.max(value, tree.max);
+    }
     if (meta.mode === "class") {
       // For class based maps:
-      if (p > (tree.p || 0)) {
+      if (area > (tree.p || 0)) {
         // TODO: Can't do this because multiple pixels having same v
-        tree.p = p;
+        tree.p = area;
         tree.v = value;
       }
     } else if (meta.mode === "coords") {
@@ -68,13 +61,14 @@ function add(tree, bounds, meta, value) {
       tree.v = (tree.v || 0) + value * p;
       tree.p = (tree.p || 0) + p;
     }
+    meta.quadCount = (cursor.quadCount || 0) + 1;
     return;
   }
 
-  addChild(tree, "nw", bounds, meta, value);
-  addChild(tree, "ne", bounds, meta, value);
-  addChild(tree, "sw", bounds, meta, value);
-  addChild(tree, "se", bounds, meta, value);
+  addChild(tree, "nw", cursor, meta, value);
+  addChild(tree, "ne", cursor, meta, value);
+  addChild(tree, "sw", cursor, meta, value);
+  addChild(tree, "se", cursor, meta, value);
 }
 
 module.exports = { add };
