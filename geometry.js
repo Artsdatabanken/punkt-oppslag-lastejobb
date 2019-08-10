@@ -1,41 +1,22 @@
-function clipToBounds(aarect, bounds) {
+function clipToBounds(aarect, clippingBounds) {
   return [
-    Math.min(bounds.x[1], Math.max(bounds.x[0], aarect[0])),
-    Math.min(bounds.y[1], Math.max(bounds.y[0], aarect[1])),
-    Math.min(bounds.x[1], Math.max(bounds.x[0], aarect[2])),
-    Math.min(bounds.y[1], Math.max(bounds.y[0], aarect[3]))
+    Math.min(clippingBounds.x[1], Math.max(clippingBounds.x[0], aarect[0])),
+    Math.min(clippingBounds.y[1], Math.max(clippingBounds.y[0], aarect[1])),
+    Math.min(clippingBounds.x[1], Math.max(clippingBounds.x[0], aarect[2])),
+    Math.min(clippingBounds.y[1], Math.max(clippingBounds.y[0], aarect[3]))
   ];
 }
 
-function normalize(coord, bounds) {
+/*
+Normalizes coordinates to 0-1 range
+*/
+function normalize(coord, worldBounds) {
   return [
-    (coord[0] - bounds.left) / bounds.width,
-    (coord[1] - bounds.bottom) / bounds.height,
-    (coord[2] - bounds.left) / bounds.width,
-    (coord[3] - bounds.bottom) / bounds.height
+    (coord[0] - worldBounds.left) / worldBounds.width,
+    (coord[1] - worldBounds.bottom) / worldBounds.height,
+    (coord[2] - worldBounds.left) / worldBounds.width,
+    (coord[3] - worldBounds.bottom) / worldBounds.height
   ];
 }
 
-function getExtents(data) {
-  let bounds = {
-    left: 9e9,
-    bottom: 9e9,
-    right: -9e9,
-    top: -9e9
-  };
-  data.forEach(d => {
-    bounds.left = Math.min(bounds.left, d.coord[1]);
-    bounds.right = Math.max(bounds.right, d.coord[1]);
-    bounds.bottom = Math.min(bounds.bottom, d.coord[0]);
-    bounds.top = Math.max(bounds.top, d.coord[0]);
-  });
-  bounds.left = -5;
-  bounds.right = 35;
-  bounds.bottom = 50;
-  bounds.top = 80;
-  bounds.width = bounds.right - bounds.left;
-  bounds.height = bounds.top - bounds.bottom;
-  return bounds;
-}
-
-module.exports = { clipToBounds, getExtents, normalize };
+module.exports = { clipToBounds, normalize };

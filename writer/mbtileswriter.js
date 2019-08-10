@@ -31,13 +31,15 @@ class MbtilesWriter {
     const exists = !!tile;
     const o = tile ? JSON.parse(tile.tile_data) : {};
 
-    o[config.name] = {
-      v: node.v,
-      min: node.min,
-      max: node.max,
-      var: node.var
-      //    n: node.n
-    };
+    if (node.v)
+      o[config.name] = {
+        v: node.v,
+        min: node.min,
+        max: node.max,
+        var: node.var
+        //    n: node.n
+      };
+    else delete o[config.name];
 
     let json = JSON.stringify(o);
     json = lastejobb.json.sortKeys(json);

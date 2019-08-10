@@ -34,7 +34,7 @@ function pruneChildren(tree, options = { compactAnyP: false }) {
   value = tree.sw.v;
   if (!canPullFromChild(tree.se, value)) return count;
   value = tree.se.v;
-  debugger;
+
   // All quads have the same value, remove and set the value on parent
   tree.v = value;
   tree.p = 0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p);

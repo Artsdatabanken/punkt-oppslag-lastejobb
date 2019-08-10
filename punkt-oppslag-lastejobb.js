@@ -71,8 +71,8 @@ async function processDataset(layer, tree) {
     quadtree.statistics.variance.add(tree);
   }
   log.info("Pruning...");
-  const pruneCount = quadtree.compact.pruneChildren(tree, layer);
-  log.info("Pruned " + pruneCount + " tiles.");
+  layer.pruneCount = quadtree.compact.pruneChildren(tree, layer);
+  log.info("Pruned " + layer.pruneCount + " tiles.");
   //log.info("Quantizing");
   //      quadtree.compact.quantizeValues(tree);
   log.info("Generating summary");
@@ -90,12 +90,6 @@ async function processDataset(layer, tree) {
     path.join(basePath, layer.name + "_stats.json"),
     JSON.stringify(stats)
   );
-  //    fs.writeFileSync("x.json", JSON.stringify(r));
-  //    fs.writeFileSync("tree.json", JSON.stringify(tree));
-  // })
-  //  .catch(e => {
-  //    log.error(e);
-  //  });
 }
 
 async function processTiff(layer, tree) {

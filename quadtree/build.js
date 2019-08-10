@@ -58,8 +58,8 @@ function add(tree, cursor, meta, value) {
       tree.p = value;
     } else {
       // For linear gradient maps:
-      tree.v = (tree.v || 0) + value * p;
-      tree.p = (tree.p || 0) + p;
+      tree.v = (tree.v || 0) + value * area;
+      tree.p = (tree.p || 0) + area;
     }
     meta.quadCount = (cursor.quadCount || 0) + 1;
     return;
