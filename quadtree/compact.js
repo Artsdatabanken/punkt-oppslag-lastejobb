@@ -45,7 +45,7 @@ function pruneChildren(node, options = { compactAnyP: false }) {
   delete node.ne;
   delete node.sw;
   delete node.se;
-  return count + 4;
+  return count + 4 - 1; // One parent tile added, 4 children removed
 }
 
 function quantizeValues(tree) {
