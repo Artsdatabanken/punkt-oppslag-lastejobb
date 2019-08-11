@@ -73,6 +73,7 @@ async function processDataset(layer, tree) {
     log.info("Calculating variance...");
     quadtree.statistics.variance.add(tree);
   }
+  log.info(`Indexed ${stats.quadCount} tiles`);
   log.info("Pruning...");
   layer.pruneCount = quadtree.compact.pruneChildren(tree, layer);
   log.info("Pruned " + layer.pruneCount + " tiles.");
@@ -86,7 +87,9 @@ async function processDataset(layer, tree) {
     JSON.stringify(stats)
   );
 
-  log.info(`Writing ${stats.quadCount} tiles to ${buildPath}...`);
+  log.info(
+    `Writing ${stats.quadCount - layer.pruneCount} tiles to ${buildPath}...`
+  );
   //      filesystemwriter.write(tree, buildPath, layer);
   const mbtileswriter = new Mbtileswriter(buildPath);
   mbtileswriter.writeAll(tree, layer);
