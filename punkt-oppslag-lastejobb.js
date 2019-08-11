@@ -41,7 +41,7 @@ async function processLayer(layerName, basePath) {
 
 function readConfig(basePath) {
   const tree = lastejobb.io.readJson(path.join(basePath, "config.json"));
-  log.info("Bounds:               " + JSON.stringify(tree.bounds));
+  log.info("Bounds: " + JSON.stringify(tree.bounds));
   tree.bounds.width = tree.bounds.right - tree.bounds.left;
   tree.bounds.height = tree.bounds.top - tree.bounds.bottom;
   return tree;
@@ -55,7 +55,7 @@ async function processDataset(layer, tree) {
   intervall.original.bredde = intervall.original[1] - intervall.original[0];
   intervall.normalisertVerdi.bredde =
     intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
-  log.info("Zoom limit:           " + layer.zoom);
+  log.info("Zoom depth: " + layer.zoom);
   log.info(
     "Index resolution: " +
       tree.bounds.width * Math.pow(0.5, layer.zoom) +
