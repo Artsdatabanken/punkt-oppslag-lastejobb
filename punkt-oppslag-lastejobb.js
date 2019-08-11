@@ -57,7 +57,7 @@ async function processDataset(layer, tree) {
     intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
   log.info("Zoom limit:           " + layer.zoom);
   log.info(
-    "Effective resolution: " +
+    "Index resolution: " +
       tree.bounds.width * Math.pow(0.5, layer.zoom) +
       " meters"
   );
