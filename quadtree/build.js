@@ -10,8 +10,6 @@ const quadBound = {
 
 function addChild(tree, quadrant, parentCursor, meta, value) {
   let bounds = geometry.clipToBounds(parentCursor.bounds, quadBound[quadrant]);
-  const area = calcArea(parentCursor.bounds);
-  if (area <= 0) return;
   const xbounds = quadBound[quadrant];
   bounds = [
     2 * (bounds[0] - xbounds.x[0]),
@@ -19,6 +17,8 @@ function addChild(tree, quadrant, parentCursor, meta, value) {
     2 * (bounds[2] - xbounds.x[0]),
     2 * (bounds[3] - xbounds.y[0])
   ];
+  const area = calcArea(bounds);
+  if (area <= 0) return;
   const cursor = {
     bounds: bounds,
     area,
@@ -42,7 +42,6 @@ function add(tree, cursor, layer, value) {
   const area = calcArea(cursor.bounds);
   if (area <= 0) return;
   if (cursor.zoom === cursor.targetZoom) {
-    debugger;
     layer.converter.encode(tree, area, value);
     if (layer.addMinMax) {
       tree.min = tree.min === undefined ? value : Math.min(value, tree.min);
