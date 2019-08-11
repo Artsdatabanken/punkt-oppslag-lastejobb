@@ -1,3 +1,4 @@
+const { log } = require("lastejobb");
 const geometry = require("../geometry");
 
 const quadBound = {
@@ -8,9 +9,9 @@ const quadBound = {
   se: { x: [0.5, 1], y: [0.5, 1] }
 };
 
-function addChild(tree, quadrant, parentCursor, meta, value) {
-  let bounds = geometry.clipToBounds(parentCursor.bounds, quadBound[quadrant]);
+function addChild(tree, quadrant, parentCursor, layer, value) {
   const xbounds = quadBound[quadrant];
+  let bounds = geometry.clipToBounds(parentCursor.bounds, xbounds);
   bounds = [
     2 * (bounds[0] - xbounds.x[0]),
     2 * (bounds[1] - xbounds.y[0]),
@@ -20,26 +21,25 @@ function addChild(tree, quadrant, parentCursor, meta, value) {
   const area = calcArea(bounds);
   if (area <= 0) return;
   const cursor = {
-    bounds: bounds,
+    bounds,
     area,
     zoom: parentCursor.zoom + 1,
     targetZoom: parentCursor.targetZoom
   };
   if (!tree[quadrant]) tree[quadrant] = {};
 
-  add(tree[quadrant], cursor, meta, value);
+  add(tree[quadrant], cursor, layer, value);
 }
 
+// Area of axis aligned bounding box
 function calcArea(aabb) {
-  let area = (aabb[2] - aabb[0]) * (aabb[3] - aabb[1]);
-  //  if (area < epsilon) area = 0;
-  return area;
+  return (aabb[2] - aabb[0]) * (aabb[3] - aabb[1]);
 }
 
 function add(tree, cursor, layer, value) {
   const epsilon = 1e-6;
-  cursor.bounds = geometry.clipToBounds(cursor.bounds, quadBound.parent);
-  const area = calcArea(cursor.bounds);
+  const bounds = geometry.clipToBounds(cursor.bounds, quadBound.parent);
+  const area = calcArea(bounds);
   if (area <= 0) return;
   if (cursor.zoom === cursor.targetZoom) {
     layer.converter.encode(tree, area, value);
