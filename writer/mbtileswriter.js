@@ -26,20 +26,20 @@ class MbtilesWriter {
     else this.statement.insertTile.run(key, buffer);
   }
 
-  updateTile(node, config, key) {
+  updateTile(node, layer, key) {
     const tile = this.readTile(key);
     const exists = !!tile;
     const o = tile ? JSON.parse(tile.tile_data) : {};
 
-    if (node.v)
-      o[config.name] = {
+    if (node.v) {
+      const v = node.v;
+      o[layer.name] = {
         v: node.v,
         min: node.min,
         max: node.max,
         var: node.var
-        //    n: node.n
       };
-    else delete o[config.name];
+    }
 
     let json = JSON.stringify(o);
     json = lastejobb.json.sortKeys(json);
@@ -65,18 +65,18 @@ class MbtilesWriter {
 
   directionToKey = { nw: 0, ne: 1, sw: 2, se: 3 };
 
-  writeChild(tree, config, key, direction) {
+  writeChild(tree, layer, key, direction) {
     const node = tree[direction];
-    this.write(node, config, key + this.directionToKey[direction]);
+    this.write(node, layer, key + this.directionToKey[direction]);
   }
 
-  write(node, config, key) {
+  write(node, layer, key) {
     if (!node) return;
-    this.updateTile(node, config, key);
-    this.writeChild(node, config, key, "nw");
-    this.writeChild(node, config, key, "ne");
-    this.writeChild(node, config, key, "sw");
-    this.writeChild(node, config, key, "se");
+    this.updateTile(node, layer, key);
+    this.writeChild(node, layer, key, "nw");
+    this.writeChild(node, layer, key, "ne");
+    this.writeChild(node, layer, key, "sw");
+    this.writeChild(node, layer, key, "se");
   }
 
   openDatabase(directory) {
@@ -86,12 +86,12 @@ class MbtilesWriter {
     return new sqlite3(sqlitePath);
   }
 
-  writeAll(node, config) {
+  writeAll(node, layer) {
     log.info("Writing tiles...");
     this.db.exec("PRAGMA synchronous = OFF");
     this.db.exec("BEGIN");
     // this.db.exec("PRAGMA journal_mode = MEMORY")
-    this.write(node, config, "");
+    this.write(node, layer, "");
     this.db.exec("COMMIT");
     log.info("Done.");
   }
