@@ -24,12 +24,16 @@ async function processLayers(layerName, basePath) {
     const tree = readConfig(basePath);
     const tasks = Object.keys(tree.layers);
     for (var task of tasks) await processLayer(task, basePath);
-  } else await processLayer(layerName, basePath);
+  } else
+    await processLayer(layerName, basePath).catch(e => {
+      log.error(e);
+    });
 }
 
 async function processLayer(layerName, basePath) {
   const tree = readConfig(basePath);
   const layer = tree.layers[layerName];
+  throw new Error("abc");
   if (!layer)
     return log.warn(`Dataset ${layerName} not present in ${basePath}`);
   layer.name = layerName;
