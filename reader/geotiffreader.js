@@ -40,7 +40,6 @@ function index(raster, tree, bbox, width, height, layer) {
       const xy = geometry.normalize(coords, tree.bounds);
       const cursor = { bounds: xy, zoom: 0, targetZoom: layer.zoom };
       quadtree.add(tree, cursor, layer, value);
-      debugger;
     }
 }
 
