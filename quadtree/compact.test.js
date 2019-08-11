@@ -47,6 +47,6 @@ test("compact without full cover if we say so", () => {
 });
 
 function testCompact(tree, expected, options = {}) {
-  quadtree.compact.equalChildren(tree, options);
+  quadtree.compact.pruneChildren(tree, options);
   expect(JSON.stringify(tree)).toBe(expected);
 }

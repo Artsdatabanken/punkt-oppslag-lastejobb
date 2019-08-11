@@ -11,11 +11,11 @@ function getChild(tree, x, y) {
 
 function accumulateHits(acc, node, z) {
   if (!node.v) return;
-  acc[z] = acc[z] || { v: 0, min: 1e9, max: -1e9 };
+  acc[z] = acc[z] || {}; // v: 0, min: 1e9, max: -1e9 };
   const s = acc[z];
   s.v = node.v;
-  s.min = Math.min(s.min, node.min);
-  s.max = Math.max(s.max, node.max);
+  //  s.min = Math.min(s.min, node.min);
+  //  s.max = Math.max(s.max, node.max);
 }
 
 function innerFind(tree, x, y, z, currentZ, acc) {

@@ -20,7 +20,7 @@ function build(tree, config) {
         }
       } else {
         acc.sum += e.v;
-        acc.p += e.p;
+        if (e.p) acc.p += e.p;
         tree.min = tree.min === undefined ? e.min : Math.min(tree.min, e.min);
         tree.max = tree.max === undefined ? e.max : Math.max(tree.max, e.max);
       }
