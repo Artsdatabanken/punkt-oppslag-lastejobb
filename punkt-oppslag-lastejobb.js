@@ -106,10 +106,10 @@ async function processTiff(layer, tree) {
 }
 
 function erNullverdi(value, nullverdier) {
-  if (Array.isArray(nullverdier))
+  if (Array.isArray(nullverdier)) {
     for (let i = 0; i < nullverdier.length; i++)
       if (value === nullverdier[i]) return true;
-  if (value === nullverdier) return true;
+  } else if (value === nullverdier) return true;
   return false;
 }
 
@@ -122,7 +122,7 @@ function index(raster, tree, bbox, width, height, layer) {
       const qvalue = quantize(layer.intervall, value);
       if (Math.round(qvalue) > layer.intervall.normalisertVerdi[1])
         throw new Error("Value out of range.  In:" + value + " Out:" + qvalue);
-      const coords = getPixelCoords(bbox, x, y, width, height);
+      const coords = pixelToWorldCoordinates(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
       const cursor = { bounds: xy, zoom: 0, targetZoom: layer.zoom };
       quadtree.add(tree, cursor, layer, value);
@@ -137,7 +137,7 @@ function quantize(intervall, value) {
   );
 }
 
-function getPixelCoords(bbox, x, y, width, height) {
+function pixelToWorldCoordinates(bbox, x, y, width, height) {
   const metersPerPixelX = (bbox[2] - bbox[0]) / width;
   const metersPerPixelY = (bbox[3] - bbox[1]) / height;
   const coX = bbox[0] + x * metersPerPixelX;
