@@ -60,7 +60,7 @@ async function processDataset(layer, tree) {
     intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
   log.info("Zoom depth: " + layer.zoom);
   layer.resolution = tree.bounds.width * Math.pow(0.5, layer.zoom);
-  log.info("Index resolution: " + layer.resolution + " meters");
+  log.info("Index resolution: " + layer.resolution + " meters/quad");
   log.info("Reading: " + layer.source);
   await geotiffreader.buildQuadTileset(layer, tree);
   // .then(x => {
