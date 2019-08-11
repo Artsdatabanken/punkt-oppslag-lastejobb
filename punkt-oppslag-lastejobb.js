@@ -56,12 +56,9 @@ async function processDataset(layer, tree) {
   intervall.normalisertVerdi.bredde =
     intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
   log.info("Zoom depth: " + layer.zoom);
-  log.info(
-    "Index resolution: " +
-      tree.bounds.width * Math.pow(0.5, layer.zoom) +
-      " meters"
-  );
-  log.info("Reading:           " + layer.source);
+  layer.resolution = tree.bounds.width * Math.pow(0.5, layer.zoom);
+  log.info("Index resolution: " + layer.resolution + " meters");
+  log.info("Reading: " + layer.source);
   await geotiffreader.buildQuadTileset(layer, tree);
   // .then(x => {
   //      const coords = geometry.normalize([954000, 7940000, 0, 0], tree.bounds);
