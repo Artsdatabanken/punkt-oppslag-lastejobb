@@ -21,6 +21,13 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Arealbruksintensitet",
+      "program": "${workspaceFolder}/punkt-oppslag-lastejobb.js",
+      "args": ["data", "NN-LA-KLG-AI"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Landskapstyper",
       "program": "${workspaceFolder}/punkt-oppslag-lastejobb.js",
       "args": ["data", "NN-LA-TI"]

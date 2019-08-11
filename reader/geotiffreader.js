@@ -17,8 +17,15 @@ async function buildQuadTileset(layer, tree) {
     throw new Error("Can only handle GeoTiff containing single raster.");
   log.info("Indexing " + width + "x" + height + " raster");
   log.info("Image resolution: " + (bbox[2] - bbox[0]) / width + " meters");
-  if (bbox[0] % layer.resolution != 0)
+  if (
+    Math.abs(Math.trunc(bbox[0] / layer.resolution) * layer.resolution) /
+      bbox[0] -
+      1 >
+    1e-5
+  ) {
+    debugger;
     log.warn("Image pixels are not aligned to quad tile dimensions");
+  }
   index(rasters[0], tree, bbox, width, height, layer);
 }
 
