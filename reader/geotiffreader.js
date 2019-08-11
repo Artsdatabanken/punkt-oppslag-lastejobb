@@ -7,7 +7,7 @@ async function buildQuadTileset(layer, tree) {
   const gt = await GeoTIFF.fromFile(layer.mapFile);
   const imageCount = await gt.getImageCount();
   if (imageCount !== 1)
-    throw new Error("Can only handle GeoTiff containing single image.");
+    log.warn("Multiple images detected. Assuming the first one.");
   const image = await gt.getImage(0);
   const bbox = image.getBoundingBox();
   const width = image.getWidth();
@@ -40,6 +40,7 @@ function index(raster, tree, bbox, width, height, layer) {
       const xy = geometry.normalize(coords, tree.bounds);
       const cursor = { bounds: xy, zoom: 0, targetZoom: layer.zoom };
       quadtree.add(tree, cursor, layer, value);
+      debugger;
     }
 }
 
