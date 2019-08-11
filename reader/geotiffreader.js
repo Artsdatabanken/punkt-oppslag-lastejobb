@@ -16,7 +16,7 @@ async function buildQuadTileset(layer, tree) {
   if (rasters.length !== 1)
     throw new Error("Can only handle GeoTiff containing single raster.");
   log.info("Indexing " + width + "x" + height + " raster");
-  log.info("Image resolution: " + width / (bbox[2] - bbox[0]) + " meters");
+  log.info("Image resolution: " + (bbox[2] - bbox[0]) / width + " meters");
   index(rasters[0], tree, bbox, width, height, layer);
 }
 
