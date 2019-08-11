@@ -30,8 +30,7 @@ function erNullverdi(value, nullverdier) {
 function index(raster, tree, bbox, width, height, layer) {
   for (var y = 0; y < height; y++)
     for (var x = 0; x < width; x++) {
-      const offset = y * width + x;
-      const value = raster[offset];
+      const value = raster[y * width + x];
       if (erNullverdi(value, layer.nullverdi)) continue;
       const qvalue = quantize(layer.intervall, value);
       if (Math.round(qvalue) > layer.intervall.normalisertVerdi[1])

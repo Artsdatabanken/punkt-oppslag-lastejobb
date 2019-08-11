@@ -36,39 +36,25 @@ function calcArea(aabb) {
   return area;
 }
 
-function add(tree, cursor, meta, value) {
+function add(tree, cursor, layer, value) {
   const epsilon = 1e-6;
   cursor.bounds = geometry.clipToBounds(cursor.bounds, quadBound.parent);
   const area = calcArea(cursor.bounds);
   if (area <= 0) return;
-  const stop = cursor.zoom === cursor.targetZoom;
-  if (stop) {
-    if (meta.addMinMax) {
+  if (cursor.zoom === cursor.targetZoom) {
+    layer.converter.encode(tree, area, value);
+    if (layer.addMinMax) {
       tree.min = tree.min === undefined ? value : Math.min(value, tree.min);
       tree.max = tree.max === undefined ? value : Math.max(value, tree.max);
     }
-    if (meta.mode === "class") {
-      // For class based maps:
-      if (area > (tree.p || 0)) {
-        // TODO: Can't do this because multiple pixels having same v
-        tree.p = area;
-        tree.v = value;
-      }
-    } else if (meta.mode === "coords") {
-      tree.p = value;
-    } else {
-      // For linear gradient maps:
-      tree.v = (tree.v || 0) + value * area;
-      tree.p = (tree.p || 0) + area;
-    }
-    meta.quadCount = (cursor.quadCount || 0) + 1;
+    layer.quadCount = (layer.quadCount || 0) + 1;
     return;
   }
 
-  addChild(tree, "nw", cursor, meta, value);
-  addChild(tree, "ne", cursor, meta, value);
-  addChild(tree, "sw", cursor, meta, value);
-  addChild(tree, "se", cursor, meta, value);
+  addChild(tree, "nw", cursor, layer, value);
+  addChild(tree, "ne", cursor, layer, value);
+  addChild(tree, "sw", cursor, layer, value);
+  addChild(tree, "se", cursor, layer, value);
 }
 
 module.exports = { add };

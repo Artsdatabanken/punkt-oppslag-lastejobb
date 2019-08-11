@@ -8,11 +8,12 @@ const fs = require("fs");
 const path = require("path");
 const pkg = require("./package");
 const geotiffreader = require("./reader/geotiffreader");
+const converters = require("./converter");
 
 log.info(pkg.name + " v" + pkg.version);
 if (process.argv.length !== 4)
   return log.info(
-    "Usage: node punkt-oppslag-lastejobb <dataDirectory> <datasetName>"
+    "Usage: node punkt-oppslag-lastejobb <dataDirectory> <datasetName/all>"
   );
 const basePath = process.argv[2];
 const layerName = process.argv[3];
@@ -32,6 +33,9 @@ async function processLayer(layerName, basePath) {
   if (!layer)
     return log.warn(`Dataset ${layerName} not present in ${basePath}`);
   layer.name = layerName;
+  layer.converter = converters[layer.mode || "gradient"];
+  if (!layer.converter)
+    return log.error(`Mode ${layer.mode} not supported.  Try class/gradient`);
   await processDataset(layer, tree);
 }
 
@@ -82,7 +86,7 @@ async function processDataset(layer, tree) {
     JSON.stringify(stats)
   );
 
-  log.info(`Writing ${stats.quadCount} tiles...`);
+  log.info(`Writing ${stats.quadCount} tiles to ${buildPath}...`);
   //      filesystemwriter.write(tree, buildPath, layer);
   const mbtileswriter = new Mbtileswriter(buildPath);
   mbtileswriter.writeAll(tree, layer);
