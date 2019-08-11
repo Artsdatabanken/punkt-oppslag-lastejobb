@@ -58,14 +58,4 @@ function quantizeValues(tree) {
   tree.max = ~~tree.max;
 }
 
-function removeP(tree) {
-  if (!tree) return;
-  removeP(tree.nw);
-  removeP(tree.ne);
-  removeP(tree.sw);
-  removeP(tree.se);
-  delete tree.p;
-  if (tree.var === 0) delete tree.var;
-}
-
-module.exports = { pruneChildren, quantizeValues, removeP };
+module.exports = { pruneChildren, quantizeValues };
