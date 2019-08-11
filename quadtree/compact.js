@@ -5,45 +5,46 @@ function canPullFromChild(child, value) {
   return true;
 }
 
-function pruneChildren(tree, options = { compactAnyP: false }) {
+function pruneChildren(node, options = { compactAnyP: false }) {
   let count = 0;
-  if (!tree) return count;
-  count += pruneChildren(tree.nw);
-  count += pruneChildren(tree.ne);
-  count += pruneChildren(tree.sw);
-  count += pruneChildren(tree.se);
+  if (!node) return count;
+  count += pruneChildren(node.nw);
+  count += pruneChildren(node.ne);
+  count += pruneChildren(node.sw);
+  count += pruneChildren(node.se);
 
-  if (!tree.nw) return count;
-  if (!tree.ne) return count;
-  if (!tree.sw) return count;
-  if (!tree.se) return count;
+  if (!node.nw) return count;
+  if (!node.ne) return count;
+  if (!node.sw) return count;
+  if (!node.se) return count;
 
+  const epsilon = 1e-4;
   if (!options.compactAnyP) {
-    if (tree.nw.p !== 1) return count;
-    if (tree.ne.p !== 1) return count;
-    if (tree.sw.p !== 1) return count;
-    if (tree.se.p !== 1) return count;
+    if (node.nw.p < 1 - epsilon) return count;
+    if (node.ne.p < 1 - epsilon) return count;
+    if (node.sw.p < 1 - epsilon) return count;
+    if (node.se.p < 1 - epsilon) return count;
   }
 
   let value = 0;
-  if (!canPullFromChild(tree.nw, value)) return count;
-  value = tree.nw.v;
-  if (!canPullFromChild(tree.ne, value)) return count;
-  value = tree.ne.v;
-  if (!canPullFromChild(tree.sw, value)) return count;
-  value = tree.sw.v;
-  if (!canPullFromChild(tree.se, value)) return count;
-  value = tree.se.v;
+  if (!canPullFromChild(node.nw, value)) return count;
+  value = node.nw.v;
+  if (!canPullFromChild(node.ne, value)) return count;
+  value = node.ne.v;
+  if (!canPullFromChild(node.sw, value)) return count;
+  value = node.sw.v;
+  if (!canPullFromChild(node.se, value)) return count;
+  value = node.se.v;
 
   // All quads have the same value, remove and set the value on parent
-  tree.v = value;
-  tree.p = 0.25 * (tree.nw.p + tree.ne.p + tree.sw.p + tree.se.p);
-  tree.min = Math.min(tree.nw.min, tree.ne.min, tree.sw.min, tree.se.min);
-  tree.max = Math.max(tree.nw.max, tree.ne.max, tree.sw.max, tree.se.max);
-  delete tree.nw;
-  delete tree.ne;
-  delete tree.sw;
-  delete tree.se;
+  node.v = value;
+  node.p = 0.25 * (node.nw.p + node.ne.p + node.sw.p + node.se.p);
+  node.min = Math.min(node.nw.min, node.ne.min, node.sw.min, node.se.min);
+  node.max = Math.max(node.nw.max, node.ne.max, node.sw.max, node.se.max);
+  delete node.nw;
+  delete node.ne;
+  delete node.sw;
+  delete node.se;
   return count + 4;
 }
 

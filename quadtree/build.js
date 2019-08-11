@@ -42,6 +42,7 @@ function add(tree, cursor, layer, value) {
   const area = calcArea(cursor.bounds);
   if (area <= 0) return;
   if (cursor.zoom === cursor.targetZoom) {
+    debugger;
     layer.converter.encode(tree, area, value);
     if (layer.addMinMax) {
       tree.min = tree.min === undefined ? value : Math.min(value, tree.min);
