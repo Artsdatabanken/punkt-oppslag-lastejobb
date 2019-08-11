@@ -7,4 +7,13 @@ function encode(node, area, value) {
   node.p = newP;
 }
 
-module.exports = { encode };
+function serialize(node) {
+  return {
+    v: node.v,
+    min: node.min,
+    max: node.max,
+    var: node.var
+  };
+}
+
+module.exports = { encode, serialize };

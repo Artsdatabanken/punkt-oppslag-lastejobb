@@ -32,18 +32,11 @@ class MbtilesWriter {
     const o = tile ? JSON.parse(tile.tile_data) : {};
 
     if (node.v) {
-      const v = node.v;
-      o[layer.name] = {
-        v: node.v,
-        min: node.min,
-        max: node.max,
-        var: node.var
-      };
+      o[layer.name] = layer.converter.serialize(node);
+      let json = JSON.stringify(o);
+      json = lastejobb.json.sortKeys(json);
+      if (json !== tile) this.writeTile(key, json, exists);
     }
-
-    let json = JSON.stringify(o);
-    json = lastejobb.json.sortKeys(json);
-    if (json !== tile) this.writeTile(key, json, exists);
   }
 
   createMbtile(file, metadata) {

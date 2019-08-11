@@ -6,4 +6,8 @@ function encode(node, area, value) {
   }
 }
 
-module.exports = { encode };
+function serialize(node) {
+  return node.v;
+}
+
+module.exports = { encode, serialize };
