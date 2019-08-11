@@ -9,7 +9,7 @@ function dive(tree, acc, z) {
     n.area += tree.p;
     n.min = Math.min(n.min, tree.v);
     n.max = Math.max(n.max, tree.v);
-    acc.histogram[tree.v] = (acc.histogram[tree.v] || 0) + 1;
+    //    acc.histogram[tree.v] = (acc.histogram[tree.v] || 0) + 1;
   }
   dive(tree.nw, acc, z + 1);
   dive(tree.ne, acc, z + 1);
