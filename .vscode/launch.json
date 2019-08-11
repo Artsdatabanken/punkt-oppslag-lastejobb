@@ -14,9 +14,16 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Live config",
+      "name": "Kommune",
       "program": "${workspaceFolder}/punkt-oppslag-lastejobb.js",
       "args": ["data", "kommune"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Landskapstyper",
+      "program": "${workspaceFolder}/punkt-oppslag-lastejobb.js",
+      "args": ["data", "NN-LA-TI"]
     },
     {
       "type": "node",
