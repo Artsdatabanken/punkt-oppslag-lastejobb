@@ -39,8 +39,10 @@ function pruneChildren(node, options = { compactAnyP: false }) {
   // All quads have the same value, remove and set the value on parent
   node.v = value;
   node.p = 0.25 * (node.nw.p + node.ne.p + node.sw.p + node.se.p);
-  node.min = Math.min(node.nw.min, node.ne.min, node.sw.min, node.se.min);
-  node.max = Math.max(node.nw.max, node.ne.max, node.sw.max, node.se.max);
+  if (node.nw.min) {
+    node.min = Math.min(node.nw.min, node.ne.min, node.sw.min, node.se.min);
+    node.max = Math.max(node.nw.max, node.ne.max, node.sw.max, node.se.max);
+  }
   delete node.nw;
   delete node.ne;
   delete node.sw;
