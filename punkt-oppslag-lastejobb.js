@@ -70,7 +70,7 @@ async function processDataset(layer, tree) {
     log.info("Calculating variance...");
     quadtree.statistics.variance.add(tree);
   }
-  log.info(`Indexed ${stats.quadCount} tiles`);
+  log.info(`Indexed ${layer.quadCount} tiles`);
   log.info("Pruning...");
   layer.pruneCount = quadtree.compact.pruneChildren(tree, layer);
   log.info("Pruned " + layer.pruneCount + " tiles.");
