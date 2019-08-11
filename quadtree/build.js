@@ -8,11 +8,11 @@ const quadBound = {
   se: { x: [0.5, 1], y: [0.5, 1] }
 };
 
-function addChild(tree, dir, parentCursor, meta, value) {
-  let bounds = geometry.clipToBounds(parentCursor.bounds, quadBound[dir]);
+function addChild(tree, quadrant, parentCursor, meta, value) {
+  let bounds = geometry.clipToBounds(parentCursor.bounds, quadBound[quadrant]);
   const area = calcArea(parentCursor.bounds);
   if (area <= 0) return;
-  const xbounds = quadBound[dir];
+  const xbounds = quadBound[quadrant];
   bounds = [
     2 * (bounds[0] - xbounds.x[0]),
     2 * (bounds[1] - xbounds.y[0]),
@@ -25,9 +25,9 @@ function addChild(tree, dir, parentCursor, meta, value) {
     zoom: parentCursor.zoom + 1,
     targetZoom: parentCursor.targetZoom
   };
-  if (!tree[dir]) tree[dir] = {};
+  if (!tree[quadrant]) tree[quadrant] = {};
 
-  add(tree[dir], cursor, meta, value);
+  add(tree[quadrant], cursor, meta, value);
 }
 
 function calcArea(aabb) {
