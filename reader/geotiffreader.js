@@ -44,9 +44,11 @@ function index(raster, tree, bbox, width, height, layer) {
     for (var x = 0; x < width; x++) {
       const value = raster[y * width + x];
       if (erNullverdi(value, layer.nullverdi)) continue;
+      /*
       const qvalue = quantize(layer.intervall, value);
       if (Math.round(qvalue) > layer.intervall.normalisertVerdi[1])
         throw new Error("Value out of range.  In:" + value + " Out:" + qvalue);
+        */
       const coords = pixelToWorldCoordinates(bbox, x, y, width, height);
       const xy = geometry.normalize(coords, tree.bounds);
       const cursor = { bounds: xy, zoom: 0, targetZoom: layer.zoom };

@@ -55,9 +55,11 @@ async function processDataset(layer, tree) {
   const buildPath = path.join(basePath, tree.buildPath);
   layer.mapFile = path.join(basePath, layer.source);
   const intervall = layer.intervall;
-  intervall.original.bredde = intervall.original[1] - intervall.original[0];
-  intervall.normalisertVerdi.bredde =
-    intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
+  if (intervall) {
+    intervall.original.bredde = intervall.original[1] - intervall.original[0];
+    intervall.normalisertVerdi.bredde =
+      intervall.normalisertVerdi[1] - intervall.normalisertVerdi[0];
+  }
   log.info("Zoom depth: " + layer.zoom);
   layer.resolution = tree.bounds.width * Math.pow(0.5, layer.zoom);
   log.info("Index resolution: " + layer.resolution + " meters/quad");
