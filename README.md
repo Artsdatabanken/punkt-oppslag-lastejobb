@@ -1,5 +1,7 @@
 Read GeoTIFF files, create a static quadtile index tree in the file system.
 
+Data is consumed by https://github.com/Artsdatabanken/punkt-oppslag-lastejobb
+
 ## Usage
 
 ```bash
