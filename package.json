@@ -1,6 +1,6 @@
 {
   "name": "punkt-oppslag-lastejobb",
-  "version": "1.13.19",
+  "version": "1.13.20",
   "description": "",
   "bin": "./punkt-oppslag-lastejobb.js",
   "main": "index.js",
@@ -15,6 +15,6 @@
     "better-sqlite3": "^5.4.3",
     "geotiff": "^1.0.0-beta.6",
     "jest": "^24.9.0",
-    "lastejobb": "^2.4.4"
+    "lastejobb": "^2.7.2"
   }
 }
