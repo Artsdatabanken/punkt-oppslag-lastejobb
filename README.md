@@ -31,3 +31,11 @@ gdal_rasterize -co alpha=no -ot Int16 -a autorkode -tap -tr 100 100 kommune_2583
 ### Landskapstyper
 
 gdal_rasterize -co alpha=no -ot Int16 -a index -tap -tr 100 100 NN-LA-TI.geojson NN-LA-TI.tif
+
+## Build on WSL
+
+Ubuntu 20.04 sjekket.
+
+```bash
+sudo apt-get install build-essential
+```
