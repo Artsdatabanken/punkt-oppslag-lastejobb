@@ -39,3 +39,11 @@ Ubuntu 20.04 sjekket.
 ```bash
 sudo apt-get install build-essential
 ```
+
+### 23.05.24
+1. Installer python(om du mangler dette)
+2. npm install -g npm-check-updates
+3. npm-check-updates -u
+4. npm install
+geotiffjs/geotiff har en breaking change i versjon 2.0.5
+https://github.com/geotiffjs/geotiff.js/issues/301
